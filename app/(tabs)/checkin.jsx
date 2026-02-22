@@ -1,6 +1,6 @@
 /**
  * Check In Screen
- * Owner: Youssef
+ * Owner: Azealia
  *
  * This screen serves as the entry point for the Check In tab.
  * In a more polished version, tapping the Check In tab button

@@ -8,7 +8,7 @@
  *   currentStatus (string)   — the user's current status key
  *   onStatusChange(func)     — called with new status key on confirm
  *
- * TODO (Youssef):
+ * TODO (Azealia):
  *   - Add haptic feedback on confirm (expo-haptics)
  *   - Add slide-to-dismiss gesture
  *   - Animate the confirmation checkmark
