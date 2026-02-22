@@ -1,50 +1,99 @@
-# Welcome to your Expo app 👋
+# PSC Companion
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile-first interface for first responders to stay connected, coordinate quickly, and maintain situational awareness during critical deployments.
 
-## Get started
+**Course:** CS 415/615 — User Interface Design
+**Group 9:** Youssef Sallam, Azealia Khalid
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Quick Start
 
-2. Start the app
+### Prerequisites
+- [Node.js](https://nodejs.org/) v18+
+- [Expo Go](https://expo.dev/go) app on your phone
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+### Setup
 ```bash
-npm run reset-project
+# Clone the repo
+git clone https://github.com/youssefysallam/PSCCompanion.git
+cd PSCCompanion
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code with Expo Go to run on your phone.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+PSCCompanion/
+├── app/                      # Screens (Expo Router — file-based routing)
+│   ├── _layout.jsx           # Root layout
+│   └── (tabs)/
+│       ├── _layout.jsx       # Tab bar configuration
+│       ├── index.jsx         # Team Dashboard        [Youssef]
+│       ├── checkin.jsx       # Check-In screen       [Azealia]
+│       └── alerts.jsx        # Alerts feed           [Azealia]
+├── components/
+│   ├── shared/               # Reusable by both
+│   │   ├── Avatar.jsx
+│   │   ├── StatusBadge.jsx
+│   │   ├── SignalBars.jsx
+│   │   └── index.js          # Barrel export
+│   ├── dashboard/            # Dashboard-specific    [Youssef]
+│   │   ├── TeamMemberRow.jsx
+│   │   └── IncidentCard.jsx
+│   └── checkin/              # Check-in-specific     [Azealia]
+│       └── CheckInPanel.jsx
+├── constants/
+│   ├── colors.js             # Design system colors & status styles
+│   └── mockData.js           # Shared mock data
+└── assets/
+```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## Ownership
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Feature              | Owner    | Files                                      |
+| -------------------- | -------- | ------------------------------------------ |
+| App scaffold & nav   | Youssef  | `app/_layout`, `app/(tabs)/_layout`        |
+| Team Dashboard       | Youssef  | `app/(tabs)/index`, `components/dashboard` |
+| Check-In flow        | Azealia  | `app/(tabs)/checkin`, `components/checkin`  |
+| Alerts screen        | Azealia  | `app/(tabs)/alerts`                        |
+| Shared components    | Both     | `components/shared`                        |
+| Colors & data        | Both     | `constants/`                               |
+
+---
+
+## Git Workflow
+
+```bash
+# Always start from latest main
+git checkout main
+git pull
+
+# Create a feature branch
+git checkout -b yourname/feature-name
+
+# Work, commit, push
+git add .
+git commit -m "descriptive message"
+git push -u origin yourname/feature-name
+
+# Open a Pull Request on GitHub → merge to main
+```
+
+---
+
+## Tech Stack
+- **React Native** with **Expo**
+- **Expo Router** (file-based navigation)
+- **@expo/vector-icons** (Ionicons)
