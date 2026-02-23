@@ -15,16 +15,17 @@
  *   - Connect to real state management when ready
  */
 
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import React, { useState } from 'react';
 import {
-  View,
+  Modal,
+  Pressable,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Pressable,
+  View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors, StatusStyles } from '../../constants/colors';
 
 const STATUS_OPTIONS = ['safe', 'enroute', 'onscene', 'needshelp'];
@@ -61,7 +62,8 @@ export default function CheckInPanel({
     setConfirming(status);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async() => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Heavy);
     onStatusChange(confirming);
     setConfirmed(true);
     setTimeout(() => {
