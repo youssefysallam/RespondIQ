@@ -17,18 +17,21 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   Modal,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Colors, StatusStyles } from '../../constants/colors';
 
 const STATUS_OPTIONS = ['safe', 'enroute', 'onscene', 'needshelp'];
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const STATUS_ICONS = {
   safe: 'checkmark-shield',
@@ -58,6 +61,53 @@ export default function CheckInPanel({
   const [confirming, setConfirming] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
 
+  const translateY = useSharedValue(0); //intialy modal is visible 
+  const shouldDismiss = useSharedValue(false);
+ 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateY.value = Math.max(0, event.translationY);
+    })
+    .onEnd((event) => {
+      const shouldClose =
+        translateY.value > 120 || event.velocityY > 1000;
+    
+      if (shouldClose) {
+        shouldDismiss.value = true;
+        translateY.value = withTiming(SCREEN_HEIGHT, {duration: 250 });
+      
+      } else {
+        translateY.value = withSpring(0);
+      }
+    });
+
+    useEffect(() => {
+      if (visible){
+        translateY.value = 0;
+      }
+    }, [visible]);
+    
+    useEffect(() => {
+      const id = setInterval(() => {
+        if (shouldDismiss.value && translateY.value >= 500) {
+          shouldDismiss.value = false;
+          //reset internal state before closing 
+          setConfirmed(false);
+          setConfirming(null);
+          
+          onClose();
+        }
+      }, 16);
+    
+      return () => clearInterval(id);
+    }, []);
+  
   const handleSelect = (status) => {
     setConfirming(status);
   };
@@ -71,12 +121,6 @@ export default function CheckInPanel({
       setConfirming(null);
       onClose();
     }, 1100);
-  };
-
-  const handleClose = () => {
-    setConfirming(null);
-    setConfirmed(false);
-    onClose();
   };
 
   // Confirmation success screen
@@ -165,25 +209,27 @@ export default function CheckInPanel({
   );
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <Pressable style={styles.overlay} onPress={handleClose}>
-        <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          {/* Handle bar */}
-          <View style={styles.handle} />
+    <Modal visible={visible} transparent animationType="none">
+      <View style={styles.overlay}>
+          <GestureDetector gesture={panGesture}>
+            <Animated.View style = {[styles.sheet, animatedStyle]}>
+              {/* Handle bar */}
+              <View style={styles.handle} />
 
-          {confirmed ? (
-            renderConfirmed()
-          ) : (
-            <>
-              <Text style={styles.title}>Check In</Text>
-              <Text style={styles.subtitle}>
-                Update your status for the team
-              </Text>
-              {confirming ? renderConfirmStep() : renderOptions()}
-            </>
-          )}
-        </Pressable>
-      </Pressable>
+              {confirmed ? (
+                renderConfirmed()
+              ) : (
+                <>
+                  <Text style={styles.title}>Check In</Text>
+                  <Text style={styles.subtitle}>
+                    Update your status for the team
+                  </Text>
+                  {confirming ? renderConfirmStep() : renderOptions()}
+                </>
+              )}
+            </Animated.View>
+          </GestureDetector>   
+      </View>
     </Modal>
   );
 }
