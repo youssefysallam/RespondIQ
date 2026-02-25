@@ -1,8 +1,6 @@
 /**
- * SignalBars — shows connectivity strength (0–4 bars).
- *
- * Props:
- *   strength (number) — 0 to 4
+ * SignalBars — connectivity strength with glow.
+ * Props: strength (0–4)
  */
 
 import React from 'react';
@@ -14,8 +12,8 @@ export default function SignalBars({ strength = 0 }) {
     strength <= 1
       ? Colors.danger
       : strength <= 2
-      ? Colors.warning
-      : Colors.success;
+        ? Colors.warning
+        : Colors.success;
 
   return (
     <View style={styles.container}>
@@ -26,7 +24,7 @@ export default function SignalBars({ strength = 0 }) {
             styles.bar,
             {
               height: 2 + i * 2.5,
-              backgroundColor: i <= strength ? barColor : '#dce0e8',
+              backgroundColor: i <= strength ? barColor : Colors.textTertiary + '40',
             },
           ]}
         />
@@ -44,6 +42,6 @@ const styles = StyleSheet.create({
   },
   bar: {
     width: 3,
-    borderRadius: 1.5,
+    borderRadius: 1,
   },
 });

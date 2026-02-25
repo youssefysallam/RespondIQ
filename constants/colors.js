@@ -1,74 +1,86 @@
 /**
- * PSC Companion — Design System Colors
- * Shared across all screens and components.
- * Import: import { Colors, StatusStyles } from '../constants/colors';
+ * PSC Companion — Solo Leveling System UI Design Tokens
+ * Dark theme with cyan glow, system-panel aesthetic.
+ * Import: import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../constants/colors';
  */
 
 export const Colors = {
   // Backgrounds
-  bg: '#f2f4f7',
-  surface: '#ffffff',
+  bg: '#070c1a',
+  surface: '#0a1228',
+  panel: 'rgba(8, 18, 40, 0.85)',
 
-  // Primary accent
-  accent: '#2d6cdf',
-  accentLight: '#e8f0fe',
-  accentSoft: '#4a8af4',
+  // Primary glow accent
+  cyan: '#00d4ff',
+  cyanDim: '#0090b3',
+  cyanGlow: 'rgba(0, 212, 255, 0.35)',
+  cyanFaint: 'rgba(0, 212, 255, 0.08)',
+  cyanBorder: 'rgba(0, 212, 255, 0.25)',
 
   // Semantic
-  danger: '#d93025',
-  dangerBg: '#fce8e6',
-  warning: '#e8710a',
-  warningBg: '#fef3e1',
-  success: '#1a8d5f',
-  successBg: '#e6f5ed',
+  danger: '#ff3b3b',
+  dangerGlow: 'rgba(255, 59, 59, 0.3)',
+  dangerFaint: 'rgba(255, 59, 59, 0.08)',
+  warning: '#ffb020',
+  warningGlow: 'rgba(255, 176, 32, 0.3)',
+  warningFaint: 'rgba(255, 176, 32, 0.08)',
+  success: '#00e676',
+  successGlow: 'rgba(0, 230, 118, 0.3)',
+  successFaint: 'rgba(0, 230, 118, 0.08)',
 
   // Text
-  text: '#1a1d26',
-  textSecondary: '#5f6578',
-  textTertiary: '#9099b0',
+  text: '#c8d6e5',
+  textBright: '#e8f0fe',
+  textSecondary: '#7a8ba8',
+  textTertiary: '#4a6080',
 
-  // Borders & shadows
-  border: 'rgba(0,0,0,0.06)',
-  shadow: 'rgba(0,0,0,0.04)',
-  shadowMd: 'rgba(0,0,0,0.07)',
+  // Borders
+  border: 'rgba(0, 212, 255, 0.12)',
+  borderStrong: 'rgba(0, 212, 255, 0.25)',
 };
 
 /**
- * Status definitions — used everywhere a member status is displayed.
- * Keys match the `status` field in member data.
+ * Status definitions — Solo Leveling system notification style.
+ * Labels are UPPERCASE to match the game UI bracket style.
  */
 export const StatusStyles = {
   safe: {
     color: Colors.success,
-    bg: Colors.successBg,
-    label: 'Safe',
+    glow: Colors.successGlow,
+    bg: Colors.successFaint,
+    label: 'SAFE',
+    icon: 'checkmark-shield',
   },
   enroute: {
-    color: Colors.accent,
-    bg: Colors.accentLight,
-    label: 'En Route',
+    color: Colors.cyan,
+    glow: Colors.cyanGlow,
+    bg: Colors.cyanFaint,
+    label: 'EN ROUTE',
+    icon: 'arrow-forward-circle',
   },
   onscene: {
     color: Colors.warning,
-    bg: Colors.warningBg,
-    label: 'On Scene',
+    glow: Colors.warningGlow,
+    bg: Colors.warningFaint,
+    label: 'ON SCENE',
+    icon: 'eye',
   },
   needshelp: {
     color: Colors.danger,
-    bg: Colors.dangerBg,
-    label: 'Needs Help',
+    glow: Colors.dangerGlow,
+    bg: Colors.dangerFaint,
+    label: 'NEEDS HELP',
+    icon: 'warning',
   },
   offline: {
     color: Colors.textTertiary,
-    bg: '#f0f1f5',
-    label: 'Offline',
+    glow: 'transparent',
+    bg: 'rgba(74, 96, 128, 0.08)',
+    label: 'OFFLINE',
+    icon: 'wifi-off',
   },
 };
 
-/**
- * Helper: sort priority for statuses.
- * Lower number = shown first (more urgent).
- */
 export const STATUS_SORT_ORDER = {
   needshelp: 0,
   onscene: 1,

@@ -1,107 +1,160 @@
 /**
- * IncidentCard — displays an active incident with priority styling.
+ * IncidentCard — Large swipeable card, Solo Leveling style.
+ * Designed to be used inside a horizontal ScrollView.
  *
  * Props:
  *   incident (object) — { id, type, location, priority, time, units }
+ *   width    (number) — card width (passed from parent based on screen size)
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 
-export default function IncidentCard({ incident }) {
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
+export default function IncidentCard({ incident, width }) {
   const isHigh = incident.priority === 'high';
-  const color = isHigh ? Colors.danger : Colors.accent;
-  const bgColor = isHigh ? Colors.dangerBg : Colors.accentLight;
+  const color = isHigh ? Colors.danger : Colors.warning;
+  const bg = isHigh ? Colors.dangerFaint : Colors.warningFaint;
+  const cardWidth = width || SCREEN_WIDTH - 56;
 
   return (
-    <View style={styles.card}>
-      <View style={[styles.iconBox, { backgroundColor: bgColor }]}>
-        <Ionicons
-          name={isHigh ? 'flame' : 'medkit'}
-          size={20}
-          color={color}
-        />
-      </View>
+    <View style={[styles.card, { width: cardWidth, borderColor: color + '35' }]}>
+      {/* Top glow line */}
+      <View style={[styles.glowLine, { backgroundColor: color + '50' }]} />
 
-      <View style={styles.content}>
-        <View style={styles.topRow}>
-          <Text style={styles.title}>{incident.type}</Text>
-          {isHigh && (
-            <View style={styles.urgentBadge}>
-              <Text style={styles.urgentText}>URGENT</Text>
-            </View>
-          )}
-        </View>
-        <Text style={styles.detail}>
-          {incident.location} · {incident.time}
+      {/* Priority tag */}
+      <View style={[styles.priorityBadge, { backgroundColor: bg, borderColor: color + '50' }]}>
+        <Text style={[styles.priorityText, { color }]}>
+          {isHigh ? '! URGENT' : '◉ ACTIVE'}
         </Text>
-        <Text style={styles.units}>{incident.units} units assigned</Text>
       </View>
 
-      <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
+      {/* Main content */}
+      <View style={styles.body}>
+        <View style={[styles.iconBox, { backgroundColor: bg, borderColor: color + '40' }]}>
+          <Ionicons
+            name={isHigh ? 'flame' : 'medkit'}
+            size={26}
+            color={color}
+          />
+        </View>
+
+        <View style={styles.info}>
+          <Text style={styles.type}>{incident.type}</Text>
+          <Text style={styles.location}>{incident.location}</Text>
+        </View>
+      </View>
+
+      {/* Footer stats */}
+      <View style={styles.footer}>
+        <View style={styles.stat}>
+          <Text style={styles.statLabel}>TIME</Text>
+          <Text style={[styles.statValue, { color }]}>{incident.time}</Text>
+        </View>
+        <View style={[styles.statDivider, { backgroundColor: color + '20' }]} />
+        <View style={styles.stat}>
+          <Text style={styles.statLabel}>UNITS</Text>
+          <Text style={[styles.statValue, { color }]}>{incident.units}</Text>
+        </View>
+        <View style={[styles.statDivider, { backgroundColor: color + '20' }]} />
+        <View style={styles.stat}>
+          <Text style={styles.statLabel}>ID</Text>
+          <Text style={[styles.statValue, { color }]}>{incident.id}</Text>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: Colors.panel,
+    borderRadius: 4,
+    borderWidth: 1,
+    overflow: 'hidden',
+    paddingBottom: 0,
+  },
+  glowLine: {
+    height: 2,
+    width: '100%',
+  },
+  priorityBadge: {
+    alignSelf: 'flex-start',
+    marginTop: 14,
+    marginLeft: 14,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 2,
+    borderWidth: 1,
+  },
+  priorityText: {
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1.5,
+  },
+  body: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 16,
   },
   iconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+    width: 50,
+    height: 50,
+    borderRadius: 4,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  content: {
+  info: {
     flex: 1,
-    minWidth: 0,
   },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1a1d26',
-  },
-  urgentBadge: {
-    backgroundColor: '#fce8e6',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  urgentText: {
-    fontSize: 10,
+  type: {
+    fontSize: 18,
     fontWeight: '700',
-    color: '#d93025',
+    color: Colors.textBright,
+    letterSpacing: 0.3,
+  },
+  location: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontFamily: 'monospace',
+    marginTop: 4,
     letterSpacing: 0.5,
   },
-  detail: {
-    fontSize: 12,
-    color: '#9099b0',
-    marginTop: 3,
+  footer: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
   },
-  units: {
-    fontSize: 11,
-    color: '#9099b0',
-    marginTop: 6,
+  stat: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 8,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 1.5,
+    marginBottom: 3,
+  },
+  statValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 0.5,
+  },
+  statDivider: {
+    width: 1,
+    alignSelf: 'stretch',
   },
 });

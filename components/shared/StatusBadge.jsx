@@ -1,9 +1,10 @@
 /**
- * StatusBadge — colored pill showing a member's status.
+ * StatusBadge — Solo Leveling system notification style.
+ * Glowing border with uppercase monospace text.
  *
  * Props:
- *   status  (string)  — safe | enroute | onscene | needshelp | offline
- *   compact (bool)    — optional, smaller version without label
+ *   status  (string) — safe | enroute | onscene | needshelp | offline
+ *   compact (bool)   — dot only
  */
 
 import React from 'react';
@@ -11,19 +12,18 @@ import { View, Text, StyleSheet } from 'react-native';
 import { StatusStyles } from '../../constants/colors';
 
 export default function StatusBadge({ status, compact = false }) {
-  const style = StatusStyles[status] || StatusStyles.offline;
+  const s = StatusStyles[status] || StatusStyles.offline;
 
   if (compact) {
     return (
-      <View style={[styles.dot, { backgroundColor: style.color }]} />
+      <View style={[styles.dot, { backgroundColor: s.color }]} />
     );
   }
 
   return (
-    <View style={[styles.badge, { backgroundColor: style.bg }]}>
-      <View style={[styles.dot, { backgroundColor: style.color }]} />
-      <Text style={[styles.label, { color: style.color }]}>
-        {style.label}
+    <View style={[styles.badge, { backgroundColor: s.bg, borderColor: s.color + '40' }]}>
+      <Text style={[styles.label, { color: s.color }]}>
+        {s.label}
       </Text>
     </View>
   );
@@ -33,10 +33,10 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 10,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 2,
+    borderWidth: 1,
   },
   dot: {
     width: 7,
@@ -44,7 +44,9 @@ const styles = StyleSheet.create({
     borderRadius: 3.5,
   },
   label: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 9,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
   },
 });
