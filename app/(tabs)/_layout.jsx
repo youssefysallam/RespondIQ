@@ -1,12 +1,10 @@
 /**
- * Tab Layout — defines the bottom tab bar.
- * The "Check In" tab is a special button that opens the CheckInPanel modal
- * instead of navigating to a screen.
+ * Tab Layout — Solo Leveling system UI tab bar.
  */
 
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
 
 export default function TabLayout() {
@@ -15,7 +13,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: Colors.accent,
+        tabBarActiveTintColor: Colors.cyan,
         tabBarInactiveTintColor: Colors.textTertiary,
         tabBarLabelStyle: styles.tabLabel,
       }}
@@ -23,7 +21,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Team',
+          title: 'TEAM',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people" size={size} color={color} />
           ),
@@ -32,21 +30,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="checkin"
         options={{
-          title: 'Check In',
+          title: 'CHECK IN',
           tabBarIcon: ({ color, size }) => (
             <View style={styles.checkinButton}>
-              <Ionicons name="radio" size={24} color="#fff" />
+              <Ionicons name="radio" size={24} color={Colors.cyan} />
             </View>
           ),
-          tabBarLabel: () => null, // hide label for the center button
+          tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen
         name="alerts"
         options={{
-          title: 'Alerts',
+          title: 'ALERTS',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications" size={size} color={color} />
+            <Ionicons name="flash" size={size} color={color} />
           ),
         }}
       />
@@ -56,29 +54,33 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: Colors.surface,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.06)',
+    borderTopColor: Colors.border,
     height: 80,
     paddingBottom: 20,
     paddingTop: 8,
   },
   tabLabel: {
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 9,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1.5,
   },
   checkinButton: {
     width: 52,
     height: 52,
-    borderRadius: 16,
-    backgroundColor: Colors.accent,
+    borderRadius: 4,
+    backgroundColor: Colors.cyanFaint,
+    borderWidth: 1.5,
+    borderColor: Colors.cyanBorder,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: -16,
-    shadowColor: Colors.accent,
+    shadowColor: Colors.cyan,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowRadius: 16,
+    elevation: 8,
   },
 });

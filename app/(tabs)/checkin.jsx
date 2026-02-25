@@ -1,17 +1,7 @@
 /**
  * Check In Screen
  * Owner: Azealia
- *
- * This screen serves as the entry point for the Check In tab.
- * In a more polished version, tapping the Check In tab button
- * could directly open the modal without navigating here.
- *
- * For now, this screen immediately shows the CheckInPanel.
- *
- * TODO:
- *  - Consider making this a modal route instead of a tab
- *  - Connect currentStatus to shared app state
- *  - Add status history view here
+ * Solo Leveling system UI style.
  */
 
 import React, { useState } from 'react';
@@ -22,18 +12,18 @@ import CheckInPanel from '../../components/checkin/CheckInPanel';
 export default function CheckInScreen() {
   const [currentStatus, setCurrentStatus] = useState('safe');
   const [showPanel, setShowPanel] = useState(false);
-  const statusStyle = StatusStyles[currentStatus];
+  const s = StatusStyles[currentStatus];
 
   return (
     <View style={styles.screen}>
       <View style={styles.content}>
-        <Text style={styles.title}>Your Status</Text>
+        <Text style={styles.sectionTitle}>CURRENT STATUS</Text>
 
-        {/* Current status display */}
-        <View style={[styles.statusCard, { borderColor: statusStyle.color + '30' }]}>
-          <View style={[styles.statusDot, { backgroundColor: statusStyle.color }]} />
-          <Text style={[styles.statusLabel, { color: statusStyle.color }]}>
-            {statusStyle.label}
+        {/* Status display — system panel style */}
+        <View style={[styles.statusPanel, { borderColor: s.color + '40' }]}>
+          <View style={[styles.statusDot, { backgroundColor: s.color }]} />
+          <Text style={[styles.statusLabel, { color: s.color }]}>
+            [{s.label}]
           </Text>
         </View>
 
@@ -42,7 +32,7 @@ export default function CheckInScreen() {
           onPress={() => setShowPanel(true)}
           activeOpacity={0.8}
         >
-          <Text style={styles.updateButtonText}>Update Status</Text>
+          <Text style={styles.updateButtonText}>UPDATE STATUS</Text>
         </TouchableOpacity>
 
         <Text style={styles.hint}>
@@ -71,56 +61,61 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 40,
   },
-  title: {
-    fontSize: 22,
+  sectionTitle: {
+    fontSize: 14,
     fontWeight: '700',
-    color: Colors.text,
+    fontFamily: 'monospace',
+    color: Colors.cyan,
+    letterSpacing: 2.5,
     marginBottom: 20,
   },
-  statusCard: {
+  statusPanel: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 16,
-    backgroundColor: '#fff',
-    borderWidth: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: 4,
+    backgroundColor: Colors.panel,
+    borderWidth: 1,
     marginBottom: 24,
   },
   statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   statusLabel: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  updateButton: {
-    backgroundColor: Colors.accent,
-    paddingVertical: 16,
-    paddingHorizontal: 40,
-    borderRadius: 14,
-    shadowColor: Colors.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  updateButtonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1.5,
+  },
+  updateButton: {
+    backgroundColor: Colors.cyanFaint,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    paddingVertical: 16,
+    paddingHorizontal: 40,
+    borderRadius: 4,
+    shadowColor: Colors.cyan,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  updateButtonText: {
+    color: Colors.cyan,
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 2,
   },
   hint: {
-    fontSize: 12,
+    fontSize: 10,
+    fontFamily: 'monospace',
     color: Colors.textTertiary,
     marginTop: 16,
+    letterSpacing: 0.5,
   },
 });

@@ -1,8 +1,5 @@
 /**
  * PSC Companion — Mock Data
- * Shared data source for all screens.
- * Eventually this gets replaced with a real backend / state management.
- *
  * Import: import { TEAM, INCIDENTS, ALERTS } from '../constants/mockData';
  */
 
@@ -14,6 +11,7 @@ export const TEAM = [
     status: 'onscene',
     lastUpdate: '2m ago',
     signal: 3,
+    level: 47,
   },
   {
     id: '2',
@@ -22,6 +20,7 @@ export const TEAM = [
     status: 'safe',
     lastUpdate: '5m ago',
     signal: 4,
+    level: 38,
   },
   {
     id: '3',
@@ -30,6 +29,7 @@ export const TEAM = [
     status: 'enroute',
     lastUpdate: '1m ago',
     signal: 2,
+    level: 22,
   },
   {
     id: '4',
@@ -38,6 +38,7 @@ export const TEAM = [
     status: 'onscene',
     lastUpdate: '8m ago',
     signal: 4,
+    level: 31,
   },
   {
     id: '5',
@@ -46,6 +47,7 @@ export const TEAM = [
     status: 'needshelp',
     lastUpdate: '30s ago',
     signal: 1,
+    level: 19,
   },
   {
     id: '6',
@@ -54,6 +56,7 @@ export const TEAM = [
     status: 'offline',
     lastUpdate: '12m ago',
     signal: 0,
+    level: 35,
   },
 ];
 

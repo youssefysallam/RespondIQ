@@ -1,18 +1,13 @@
 /**
- * CheckInPanel — bottom sheet for quick status updates.
+ * CheckInPanel — Solo Leveling system notification style bottom sheet.
  * Two-tap flow: select status → confirm.
+ * Preserves gesture-based dismiss and haptic feedback.
  *
  * Props:
- *   visible       (bool)     — controls visibility
- *   onClose       (func)     — called when panel is dismissed
- *   currentStatus (string)   — the user's current status key
- *   onStatusChange(func)     — called with new status key on confirm
- *
- * TODO (Azealia):
- *   - Add haptic feedback on confirm (expo-haptics)
- *   - Add slide-to-dismiss gesture
- *   - Animate the confirmation checkmark
- *   - Connect to real state management when ready
+ *   visible        (bool)
+ *   onClose        (func)
+ *   currentStatus  (string)
+ *   onStatusChange (func)
  */
 
 import { Ionicons } from '@expo/vector-icons';
@@ -24,24 +19,20 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { Colors, StatusStyles } from '../../constants/colors';
 
 const STATUS_OPTIONS = ['safe', 'enroute', 'onscene', 'needshelp'];
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const STATUS_ICONS = {
-  safe: 'checkmark-shield',
-  enroute: 'arrow-forward',
-  onscene: 'eye',
-  needshelp: 'alert',
-  offline: 'wifi-off', // not selectable, but here for reference
-};
-
-// Helper: get the right Ionicons name
 function getIconName(status) {
   const map = {
     safe: 'checkmark-circle',
@@ -61,58 +52,50 @@ export default function CheckInPanel({
   const [confirming, setConfirming] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
 
-  const translateY = useSharedValue(0); //intialy modal is visible 
+  const translateY = useSharedValue(0);
   const shouldDismiss = useSharedValue(false);
- 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       translateY.value = Math.max(0, event.translationY);
     })
     .onEnd((event) => {
-      const shouldClose =
-        translateY.value > 120 || event.velocityY > 1000;
-    
+      const shouldClose = translateY.value > 120 || event.velocityY > 1000;
       if (shouldClose) {
         shouldDismiss.value = true;
-        translateY.value = withTiming(SCREEN_HEIGHT, {duration: 250 });
-      
+        translateY.value = withTiming(SCREEN_HEIGHT, { duration: 250 });
       } else {
         translateY.value = withSpring(0);
       }
     });
 
-    useEffect(() => {
-      if (visible){
-        translateY.value = 0;
+  useEffect(() => {
+    if (visible) {
+      translateY.value = 0;
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (shouldDismiss.value && translateY.value >= 500) {
+        shouldDismiss.value = false;
+        setConfirmed(false);
+        setConfirming(null);
+        onClose();
       }
-    }, [visible]);
-    
-    useEffect(() => {
-      const id = setInterval(() => {
-        if (shouldDismiss.value && translateY.value >= 500) {
-          shouldDismiss.value = false;
-          //reset internal state before closing 
-          setConfirmed(false);
-          setConfirming(null);
-          
-          onClose();
-        }
-      }, 16);
-    
-      return () => clearInterval(id);
-    }, []);
-  
+    }, 16);
+    return () => clearInterval(id);
+  }, []);
+
   const handleSelect = (status) => {
     setConfirming(status);
   };
 
-  const handleConfirm = async() => {
+  const handleConfirm = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Heavy);
     onStatusChange(confirming);
     setConfirmed(true);
@@ -123,35 +106,33 @@ export default function CheckInPanel({
     }, 1100);
   };
 
-  // Confirmation success screen
   const renderConfirmed = () => {
-    const style = StatusStyles[confirming];
+    const s = StatusStyles[confirming];
     return (
       <View style={styles.confirmedContainer}>
-        <View style={[styles.confirmedIcon, { backgroundColor: style.bg }]}>
-          <Ionicons name="checkmark" size={32} color={style.color} />
+        <View style={[styles.confirmedIcon, { backgroundColor: s.bg, borderColor: s.color + '60' }]}>
+          <Ionicons name="checkmark" size={32} color={s.color} />
         </View>
-        <Text style={styles.confirmedTitle}>Updated</Text>
-        <Text style={[styles.confirmedStatus, { color: style.color }]}>
-          {style.label}
+        <Text style={styles.confirmedTitle}>STATUS UPDATED</Text>
+        <Text style={[styles.confirmedStatus, { color: s.color }]}>
+          [{s.label}]
         </Text>
-        <Text style={styles.confirmedDetail}>Broadcast to your team</Text>
+        <Text style={styles.confirmedDetail}>Broadcast to all team members</Text>
       </View>
     );
   };
 
-  // Confirm step
   const renderConfirmStep = () => {
-    const style = StatusStyles[confirming];
+    const s = StatusStyles[confirming];
     return (
       <View style={styles.confirmStep}>
-        <View style={[styles.confirmIcon, { backgroundColor: style.bg }]}>
-          <Ionicons name={getIconName(confirming)} size={28} color={style.color} />
+        <View style={[styles.confirmIcon, { backgroundColor: s.bg, borderColor: s.color + '60' }]}>
+          <Ionicons name={getIconName(confirming)} size={28} color={s.color} />
         </View>
         <Text style={styles.confirmText}>
-          Change to{' '}
-          <Text style={{ color: style.color, fontWeight: '700' }}>
-            {style.label}
+          Update status to{' '}
+          <Text style={{ color: s.color, fontWeight: '700' }}>
+            [{s.label}]
           </Text>
           ?
         </Text>
@@ -160,48 +141,44 @@ export default function CheckInPanel({
             style={styles.backButton}
             onPress={() => setConfirming(null)}
           >
-            <Text style={styles.backButtonText}>Back</Text>
+            <Text style={styles.backButtonText}>CANCEL</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.confirmButton, { backgroundColor: style.color }]}
+            style={[styles.confirmButton, { backgroundColor: s.bg, borderColor: s.color + '60' }]}
             onPress={handleConfirm}
           >
-            <Text style={styles.confirmButtonText}>Confirm</Text>
+            <Text style={[styles.confirmButtonText, { color: s.color }]}>CONFIRM</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
 
-  // Selection list
   const renderOptions = () => (
     <View style={styles.options}>
       {STATUS_OPTIONS.map((key) => {
-        const style = StatusStyles[key];
+        const s = StatusStyles[key];
         const isCurrent = key === currentStatus;
         return (
           <TouchableOpacity
             key={key}
             style={[
               styles.option,
-              isCurrent && { backgroundColor: style.bg, borderColor: style.color + '30', borderWidth: 2 },
+              { borderColor: isCurrent ? s.color + '50' : Colors.border },
+              isCurrent && { backgroundColor: s.bg },
             ]}
             onPress={() => handleSelect(key)}
             activeOpacity={0.7}
           >
-            <View style={[styles.optionIcon, { backgroundColor: style.bg }]}>
-              <Ionicons name={getIconName(key)} size={20} color={style.color} />
+            <View style={[styles.optionIcon, { backgroundColor: s.bg, borderColor: s.color + '50' }]}>
+              <Ionicons name={getIconName(key)} size={20} color={s.color} />
             </View>
-            <Text style={styles.optionLabel}>{style.label}</Text>
+            <Text style={[styles.optionLabel, { color: s.color }]}>{s.label}</Text>
             <View style={{ flex: 1 }} />
             {isCurrent && (
-              <View style={[styles.currentBadge, { backgroundColor: '#fff' }]}>
-                <Text style={[styles.currentBadgeText, { color: style.color }]}>
-                  Current
-                </Text>
-              </View>
+              <Text style={[styles.currentTag, { color: s.color }]}>[CURRENT]</Text>
             )}
-            <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
+            <Ionicons name="chevron-forward" size={14} color={Colors.textTertiary} />
           </TouchableOpacity>
         );
       })}
@@ -211,24 +188,25 @@ export default function CheckInPanel({
   return (
     <Modal visible={visible} transparent animationType="none">
       <View style={styles.overlay}>
-          <GestureDetector gesture={panGesture}>
-            <Animated.View style = {[styles.sheet, animatedStyle]}>
-              {/* Handle bar */}
-              <View style={styles.handle} />
+        <GestureDetector gesture={panGesture}>
+          <Animated.View style={[styles.sheet, animatedStyle]}>
+            {/* Handle bar */}
+            <View style={styles.handle} />
 
-              {confirmed ? (
-                renderConfirmed()
-              ) : (
-                <>
-                  <Text style={styles.title}>Check In</Text>
-                  <Text style={styles.subtitle}>
-                    Update your status for the team
-                  </Text>
-                  {confirming ? renderConfirmStep() : renderOptions()}
-                </>
-              )}
-            </Animated.View>
-          </GestureDetector>   
+            {/* Top glow line */}
+            <View style={styles.glowLine} />
+
+            {confirmed ? (
+              renderConfirmed()
+            ) : (
+              <>
+                <Text style={styles.title}>QUICK CHECK-IN</Text>
+                <Text style={styles.subtitle}>Select your current status</Text>
+                {confirming ? renderConfirmStep() : renderOptions()}
+              </>
+            )}
+          </Animated.View>
+        </GestureDetector>
       </View>
     </Modal>
   );
@@ -237,40 +215,52 @@ export default function CheckInPanel({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(3, 7, 18, 0.8)',
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    borderTopWidth: 1,
+    borderTopColor: Colors.cyanBorder,
+    paddingHorizontal: 16,
     paddingBottom: 40,
     paddingTop: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    elevation: 10,
+    position: 'relative',
   },
   handle: {
     width: 36,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: '#dce0e8',
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.textTertiary,
     alignSelf: 'center',
-    marginBottom: 18,
+    marginBottom: 16,
+  },
+  glowLine: {
+    position: 'absolute',
+    top: 0,
+    left: '15%',
+    right: '15%',
+    height: 1,
+    backgroundColor: Colors.cyan + '40',
   },
   title: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#1a1d26',
-    marginBottom: 2,
+    color: Colors.cyan,
+    fontFamily: 'monospace',
+    letterSpacing: 2.5,
+    textAlign: 'center',
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 13,
-    color: '#9099b0',
-    marginBottom: 22,
+    fontSize: 10,
+    color: Colors.textTertiary,
+    fontFamily: 'monospace',
+    textAlign: 'center',
+    marginBottom: 20,
+    letterSpacing: 0.5,
   },
   options: {
     gap: 8,
@@ -278,34 +268,32 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    padding: 14,
-    borderRadius: 16,
-    backgroundColor: '#f8f9fb',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    gap: 12,
+    padding: 12,
+    borderRadius: 4,
+    backgroundColor: Colors.panel,
+    borderWidth: 1,
   },
   optionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 4,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   optionLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1a1d26',
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
   },
-  currentBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 8,
+  currentTag: {
+    fontSize: 8,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
     marginRight: 4,
-  },
-  currentBadgeText: {
-    fontSize: 11,
-    fontWeight: '600',
   },
   // Confirm step
   confirmStep: {
@@ -315,14 +303,15 @@ const styles = StyleSheet.create({
   confirmIcon: {
     width: 64,
     height: 64,
-    borderRadius: 20,
+    borderRadius: 4,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
   },
   confirmText: {
-    fontSize: 16,
-    color: '#1a1d26',
+    fontSize: 14,
+    color: Colors.text,
     marginBottom: 20,
   },
   confirmButtons: {
@@ -332,30 +321,32 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flex: 1,
-    padding: 15,
-    borderRadius: 14,
-    backgroundColor: '#f1f3f7',
+    padding: 14,
+    borderRadius: 4,
+    backgroundColor: Colors.panel,
+    borderWidth: 1,
+    borderColor: Colors.border,
     alignItems: 'center',
   },
   backButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#5f6578',
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+    color: Colors.textTertiary,
   },
   confirmButton: {
     flex: 1,
-    padding: 15,
-    borderRadius: 14,
+    padding: 14,
+    borderRadius: 4,
+    borderWidth: 1,
     alignItems: 'center',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 4,
   },
   confirmButtonText: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#fff',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
   },
   // Confirmed
   confirmedContainer: {
@@ -365,24 +356,31 @@ const styles = StyleSheet.create({
   confirmedIcon: {
     width: 72,
     height: 72,
-    borderRadius: 22,
+    borderRadius: 4,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
   },
   confirmedTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#1a1d26',
+    fontFamily: 'monospace',
+    color: Colors.cyan,
+    letterSpacing: 2,
   },
   confirmedStatus: {
     fontSize: 14,
-    fontWeight: '600',
-    marginTop: 4,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+    marginTop: 6,
   },
   confirmedDetail: {
-    fontSize: 12,
-    color: '#9099b0',
-    marginTop: 8,
+    fontSize: 10,
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    marginTop: 10,
+    letterSpacing: 0.5,
   },
 });

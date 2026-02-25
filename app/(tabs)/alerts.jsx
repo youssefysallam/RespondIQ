@@ -1,14 +1,7 @@
 /**
  * Alerts Screen
  * Owner: Azealia
- *
- * Shows a feed of team alerts and notifications.
- *
- * TODO:
- *  - Add pull-to-refresh
- *  - Mark alerts as read
- *  - Filter by type (urgent / warning / info)
- *  - Connect to real data source
+ * Solo Leveling system notification style.
  */
 
 import React from 'react';
@@ -18,18 +11,28 @@ import { Colors } from '../../constants/colors';
 import { ALERTS } from '../../constants/mockData';
 
 const TYPE_STYLES = {
-  urgent: { color: Colors.danger, bg: Colors.dangerBg, icon: 'warning' },
-  warning: { color: Colors.warning, bg: Colors.warningBg, icon: 'cellular' },
-  info: { color: Colors.accent, bg: Colors.accentLight, icon: 'checkmark-circle' },
+  urgent: { color: Colors.danger, bg: Colors.dangerFaint, icon: 'warning' },
+  warning: { color: Colors.warning, bg: Colors.warningFaint, icon: 'cellular' },
+  info: { color: Colors.cyan, bg: Colors.cyanFaint, icon: 'checkmark-circle' },
 };
 
 function AlertRow({ alert, isLast }) {
-  const style = TYPE_STYLES[alert.type] || TYPE_STYLES.info;
+  const s = TYPE_STYLES[alert.type] || TYPE_STYLES.info;
+  const isUrgent = alert.type === 'urgent';
 
   return (
-    <View style={[styles.alertRow, !isLast && styles.alertBorder]}>
-      <View style={[styles.alertIcon, { backgroundColor: style.bg }]}>
-        <Ionicons name={style.icon} size={16} color={style.color} />
+    <View
+      style={[
+        styles.alertRow,
+        !isLast && styles.alertBorder,
+        isUrgent && styles.alertUrgent,
+      ]}
+    >
+      {/* Left color bar */}
+      <View style={[styles.leftBar, { backgroundColor: s.color }]} />
+
+      <View style={[styles.alertIcon, { backgroundColor: s.bg, borderColor: s.color + '40' }]}>
+        <Ionicons name={s.icon} size={14} color={s.color} />
       </View>
       <View style={styles.alertContent}>
         <View style={styles.alertTop}>
@@ -44,11 +47,22 @@ function AlertRow({ alert, isLast }) {
   );
 }
 
+function PanelHeader({ title, color = Colors.cyan }) {
+  return (
+    <View style={[styles.panelHeader, { borderBottomColor: color + '15' }]}>
+      <View style={[styles.headerIcon, { borderColor: color }]}>
+        <Text style={[styles.headerIconText, { color }]}>!</Text>
+      </View>
+      <Text style={[styles.headerTitle, { color }]}>{title}</Text>
+    </View>
+  );
+}
+
 export default function AlertsScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.title}>Alerts</Text>
+        <Text style={styles.title}>SYSTEM ALERTS</Text>
         <Text style={styles.subtitle}>Recent team activity</Text>
       </View>
 
@@ -57,7 +71,8 @@ export default function AlertsScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.card}>
+        <View style={styles.panel}>
+          <PanelHeader title="Alert Feed" />
           {ALERTS.map((alert, i) => (
             <AlertRow
               key={alert.id}
@@ -78,55 +93,94 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 60,
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingBottom: 10,
     backgroundColor: Colors.bg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   title: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '700',
-    color: Colors.text,
-    letterSpacing: -0.5,
+    color: Colors.textBright,
+    letterSpacing: 1,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 10,
     color: Colors.textTertiary,
+    fontFamily: 'monospace',
     marginTop: 2,
+    letterSpacing: 0.8,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
     paddingBottom: 20,
-    paddingTop: 8,
+    paddingTop: 12,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+  panel: {
+    backgroundColor: Colors.panel,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
+    borderColor: Colors.cyanBorder,
+    overflow: 'hidden',
+  },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+  },
+  headerIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerIconText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  headerTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 2.5,
+    textTransform: 'uppercase',
   },
   alertRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 14,
-    padding: 16,
+    gap: 12,
+    padding: 14,
+    paddingLeft: 16,
+    position: 'relative',
+  },
+  alertUrgent: {
+    backgroundColor: Colors.dangerFaint,
   },
   alertBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.06)',
+    borderBottomColor: Colors.border,
+  },
+  leftBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 2,
   },
   alertIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 11,
+    width: 32,
+    height: 32,
+    borderRadius: 4,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,
@@ -141,19 +195,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   alertTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: Colors.text,
+    color: Colors.textBright,
     flex: 1,
   },
   alertTime: {
-    fontSize: 11,
+    fontSize: 9,
     color: Colors.textTertiary,
+    fontFamily: 'monospace',
     marginLeft: 8,
+    letterSpacing: 0.5,
   },
   alertDetail: {
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.textTertiary,
-    marginTop: 3,
+    fontFamily: 'monospace',
+    marginTop: 4,
+    letterSpacing: 0.3,
   },
 });

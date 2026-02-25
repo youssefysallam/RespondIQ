@@ -1,10 +1,10 @@
 /**
- * TeamMemberRow — single row in the team list.
- * Highlights "needshelp" members with a tinted background.
+ * TeamMemberRow — Solo Leveling system UI style.
+ * Urgent members get a glowing red left border.
  *
  * Props:
- *   member  (object) — { id, name, role, status, lastUpdate, signal }
- *   isLast  (bool)   — hides bottom border on last item
+ *   member  (object) — { id, name, role, status, lastUpdate, signal, level }
+ *   isLast  (bool)
  */
 
 import React from 'react';
@@ -20,10 +20,17 @@ export default function TeamMemberRow({ member, isLast = false }) {
       style={[
         styles.row,
         isUrgent && styles.urgentRow,
-        !isLast && !isUrgent && styles.bordered,
+        !isLast && styles.bordered,
       ]}
     >
-      <Avatar name={member.name} status={member.status} />
+      {/* Urgent left glow bar */}
+      {isUrgent && <View style={styles.urgentBar} />}
+
+      <Avatar
+        name={member.name}
+        status={member.status}
+        level={member.level}
+      />
 
       <View style={styles.info}>
         <Text style={styles.name}>{member.name}</Text>
@@ -44,33 +51,41 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 0,
+    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    position: 'relative',
   },
   urgentRow: {
-    backgroundColor: 'rgba(252, 232, 230, 0.5)',
-    marginHorizontal: -16,
-    paddingHorizontal: 16,
-    borderRadius: 14,
+    backgroundColor: Colors.dangerFaint,
+  },
+  urgentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 2,
+    backgroundColor: Colors.danger,
   },
   bordered: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.06)',
+    borderBottomColor: Colors.border,
   },
   info: {
     flex: 1,
     minWidth: 0,
   },
   name: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#1a1d26',
+    color: Colors.textBright,
   },
   detail: {
-    fontSize: 12,
-    color: '#9099b0',
+    fontSize: 10,
+    color: Colors.textTertiary,
+    fontFamily: 'monospace',
     marginTop: 2,
+    letterSpacing: 0.5,
   },
   trailing: {
     flexDirection: 'row',
