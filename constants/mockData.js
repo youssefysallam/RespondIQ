@@ -65,17 +65,43 @@ export const INCIDENTS = [
     id: 'INC-4821',
     type: 'Structure Fire',
     location: '742 Elm St',
+    address: '742 Elm St, Unit B, Downtown District',
     priority: 'high',
     time: '14:23',
     units: 4,
+    distance: '1.2 mi',
+    hazards: ['Structural collapse risk', 'Possible gas leak'],
+    assignedTeam: ['Capt. Rivera', 'PM Walsh', 'FF Okafor', 'FF Torres'],
+    resourcesRequested: ['Ladder truck', 'Hazmat unit', 'Additional medic'],
+    callTranscript:
+      'Caller reports heavy smoke from second floor of residential building. Occupants believed to still be inside. Caller states they heard an explosion before the fire started.',
+    timeline: [
+      { time: '14:23', event: 'Dispatch received — structure fire reported' },
+      { time: '14:25', event: 'Engine 7 + Medic 3 dispatched' },
+      { time: '14:28', event: 'Capt. Rivera on scene — confirms active fire' },
+      { time: '14:31', event: 'FF Okafor requests assistance — Ladder 2' },
+      { time: '14:33', event: 'Hazmat unit requested — possible gas leak' },
+    ],
   },
   {
     id: 'INC-4819',
     type: 'Medical Response',
     location: 'Riverside Park',
+    address: 'Riverside Park, North Entrance, Pavilion Area',
     priority: 'medium',
     time: '13:47',
     units: 2,
+    distance: '0.8 mi',
+    hazards: ['Crowd gathering'],
+    assignedTeam: ['Lt. Chen', 'PM Walsh'],
+    resourcesRequested: ['Additional medic'],
+    callTranscript:
+      'Caller reports adult male collapsed near the north pavilion. Conscious but disoriented. Possible heat exhaustion. Bystanders providing shade.',
+    timeline: [
+      { time: '13:47', event: 'Dispatch received — medical emergency' },
+      { time: '13:50', event: 'Medic 3 dispatched' },
+      { time: '13:55', event: 'Lt. Chen on scene — patient stable' },
+    ],
   },
 ];
 
