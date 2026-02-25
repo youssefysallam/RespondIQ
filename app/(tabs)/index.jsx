@@ -5,7 +5,10 @@
  */
 
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_WIDTH = SCREEN_WIDTH - 56;
 import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../../constants/colors';
 import { TEAM, INCIDENTS } from '../../constants/mockData';
 import TeamMemberRow from '../../components/dashboard/TeamMemberRow';
@@ -100,15 +103,27 @@ export default function DashboardScreen() {
           ))}
         </ScrollView>
 
-        {/* Active Incidents — system panel */}
-        <View style={[styles.panel, { borderColor: Colors.danger + '30' }]}>
-          <SystemPanelHeader title="Active Incidents" color={Colors.danger} />
-          <View>
-            {INCIDENTS.map((inc) => (
-              <IncidentCard key={inc.id} incident={inc} />
-            ))}
+        {/* Active Incidents — horizontal swipe cards */}
+        <View style={styles.incidentHeader}>
+          <View style={[styles.incidentHeaderIcon, { borderColor: Colors.danger }]}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.danger }}>!</Text>
           </View>
+          <Text style={styles.incidentHeaderTitle}>ACTIVE INCIDENTS</Text>
         </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled={false}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          snapToInterval={CARD_WIDTH + 10}
+          style={styles.incidentScroll}
+          contentContainerStyle={styles.incidentScrollContent}
+        >
+          {INCIDENTS.map((inc) => (
+            <IncidentCard key={inc.id} incident={inc} width={CARD_WIDTH} />
+          ))}
+        </ScrollView>
 
         {/* Team — system panel */}
         <View style={[styles.panel, { borderColor: Colors.cyanBorder }]}>
@@ -189,6 +204,33 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'monospace',
     letterSpacing: 0.5,
+  },
+  incidentHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  incidentHeaderIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  incidentHeaderTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 2.5,
+    color: Colors.danger,
+  },
+  incidentScroll: {
+    marginHorizontal: -14,
+  },
+  incidentScrollContent: {
+    paddingHorizontal: 14,
+    gap: 10,
   },
   panel: {
     backgroundColor: Colors.panel,

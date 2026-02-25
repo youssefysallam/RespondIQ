@@ -1,42 +1,69 @@
 /**
- * IncidentCard — Solo Leveling system notification style.
+ * IncidentCard — Large swipeable card, Solo Leveling style.
+ * Designed to be used inside a horizontal ScrollView.
  *
  * Props:
  *   incident (object) — { id, type, location, priority, time, units }
+ *   width    (number) — card width (passed from parent based on screen size)
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 
-export default function IncidentCard({ incident }) {
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
+export default function IncidentCard({ incident, width }) {
   const isHigh = incident.priority === 'high';
   const color = isHigh ? Colors.danger : Colors.warning;
   const bg = isHigh ? Colors.dangerFaint : Colors.warningFaint;
+  const cardWidth = width || SCREEN_WIDTH - 56;
 
   return (
-    <View style={[styles.card, { borderColor: color + '30' }]}>
-      <View style={[styles.iconBox, { backgroundColor: bg, borderColor: color + '50' }]}>
-        <Ionicons
-          name={isHigh ? 'flame' : 'medkit'}
-          size={20}
-          color={color}
-        />
-      </View>
+    <View style={[styles.card, { width: cardWidth, borderColor: color + '35' }]}>
+      {/* Top glow line */}
+      <View style={[styles.glowLine, { backgroundColor: color + '50' }]} />
 
-      <View style={styles.content}>
-        <Text style={styles.title}>{incident.type}</Text>
-        <Text style={styles.detail}>
-          {incident.location} · {incident.time}
-        </Text>
-        <Text style={styles.units}>{incident.units} units assigned</Text>
-      </View>
-
-      <View style={styles.priorityColumn}>
+      {/* Priority tag */}
+      <View style={[styles.priorityBadge, { backgroundColor: bg, borderColor: color + '50' }]}>
         <Text style={[styles.priorityText, { color }]}>
-          {isHigh ? 'URGENT' : 'ACTIVE'}
+          {isHigh ? '! URGENT' : '◉ ACTIVE'}
         </Text>
+      </View>
+
+      {/* Main content */}
+      <View style={styles.body}>
+        <View style={[styles.iconBox, { backgroundColor: bg, borderColor: color + '40' }]}>
+          <Ionicons
+            name={isHigh ? 'flame' : 'medkit'}
+            size={26}
+            color={color}
+          />
+        </View>
+
+        <View style={styles.info}>
+          <Text style={styles.type}>{incident.type}</Text>
+          <Text style={styles.location}>{incident.location}</Text>
+        </View>
+      </View>
+
+      {/* Footer stats */}
+      <View style={styles.footer}>
+        <View style={styles.stat}>
+          <Text style={styles.statLabel}>TIME</Text>
+          <Text style={[styles.statValue, { color }]}>{incident.time}</Text>
+        </View>
+        <View style={[styles.statDivider, { backgroundColor: color + '20' }]} />
+        <View style={styles.stat}>
+          <Text style={styles.statLabel}>UNITS</Text>
+          <Text style={[styles.statValue, { color }]}>{incident.units}</Text>
+        </View>
+        <View style={[styles.statDivider, { backgroundColor: color + '20' }]} />
+        <View style={styles.stat}>
+          <Text style={styles.statLabel}>ID</Text>
+          <Text style={[styles.statValue, { color }]}>{incident.id}</Text>
+        </View>
       </View>
     </View>
   );
@@ -44,52 +71,90 @@ export default function IncidentCard({ incident }) {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
     backgroundColor: Colors.panel,
     borderRadius: 4,
     borderWidth: 1,
+    overflow: 'hidden',
+    paddingBottom: 0,
+  },
+  glowLine: {
+    height: 2,
+    width: '100%',
+  },
+  priorityBadge: {
+    alignSelf: 'flex-start',
+    marginTop: 14,
+    marginLeft: 14,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 2,
+    borderWidth: 1,
+  },
+  priorityText: {
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1.5,
+  },
+  body: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 16,
   },
   iconBox: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 4,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  content: {
+  info: {
     flex: 1,
-    minWidth: 0,
   },
-  title: {
-    fontSize: 14,
-    fontWeight: '600',
+  type: {
+    fontSize: 18,
+    fontWeight: '700',
     color: Colors.textBright,
-  },
-  detail: {
-    fontSize: 10,
-    color: Colors.textTertiary,
-    fontFamily: 'monospace',
-    marginTop: 3,
     letterSpacing: 0.3,
   },
-  units: {
-    fontSize: 9,
-    color: Colors.textTertiary,
+  location: {
+    fontSize: 12,
+    color: Colors.textSecondary,
     fontFamily: 'monospace',
     marginTop: 4,
     letterSpacing: 0.5,
   },
-  priorityColumn: {
-    alignItems: 'flex-end',
+  footer: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
   },
-  priorityText: {
-    fontSize: 9,
+  stat: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 8,
     fontWeight: '700',
     fontFamily: 'monospace',
+    color: Colors.textTertiary,
     letterSpacing: 1.5,
+    marginBottom: 3,
+  },
+  statValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 0.5,
+  },
+  statDivider: {
+    width: 1,
+    alignSelf: 'stretch',
   },
 });
