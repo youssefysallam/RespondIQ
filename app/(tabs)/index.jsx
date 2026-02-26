@@ -5,11 +5,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Dimensions, Modal, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - 56;
 import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../../constants/colors';
 import { TEAM, INCIDENTS } from '../../constants/mockData';
 import TeamMemberRow from '../../components/dashboard/TeamMemberRow';
@@ -198,6 +195,11 @@ function IncidentDetailOverlay({ incident, onClose }) {
               ))}
             </View>
           </ScrollView>
+
+          {/* Close hint */}
+          <View style={detailStyles.closeHint}>
+            <Text style={detailStyles.closeHintText}>TAP OUTSIDE TO CLOSE</Text>
+          </View>
         </Pressable>
       </Pressable>
     </Modal>
@@ -491,44 +493,76 @@ export default function DashboardScreen() {
           ))}
         </ScrollView>
 
-        {/* Active Incidents — horizontal swipe cards */}
+        {/* Active Incidents — vertical stack */}
         <View style={styles.incidentHeader}>
           <View style={[styles.incidentHeaderIcon, { borderColor: Colors.danger }]}>
             <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.danger }}>!</Text>
           </View>
           <Text style={styles.incidentHeaderTitle}>ACTIVE INCIDENTS</Text>
         </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled={false}
-          snapToAlignment="start"
-          decelerationRate="fast"
-          snapToInterval={CARD_WIDTH + 10}
-          style={styles.incidentScroll}
-          contentContainerStyle={styles.incidentScrollContent}
-        >
+        <View style={styles.incidentList}>
           {INCIDENTS.map((inc) => (
             <IncidentCard
               key={inc.id}
               incident={inc}
-              width={CARD_WIDTH}
               onPress={(incident) => setSelectedIncident(incident)}
             />
           ))}
-        </ScrollView>
-
-        {/* Team — system panel */}
-        <View style={[styles.panel, { borderColor: Colors.cyanBorder }]}>
-          <SystemPanelHeader title="Team Status" color={Colors.cyan} />
-          {sortedTeam.map((member, i) => (
-            <TeamMemberRow
-              key={member.id}
-              member={member}
-              isLast={i === sortedTeam.length - 1}
-            />
-          ))}
         </View>
+
+        {/* Team — horizontal scroll */}
+        <View style={styles.teamHeader}>
+          <View style={[styles.teamHeaderIcon, { borderColor: Colors.cyan }]}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.cyan }}>!</Text>
+          </View>
+          <Text style={styles.teamHeaderTitle}>TEAM STATUS</Text>
+          <Text style={styles.teamCount}>{TEAM.length}</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          snapToInterval={160}
+          style={styles.teamScroll}
+          contentContainerStyle={styles.teamScrollContent}
+        >
+          {sortedTeam.map((member) => {
+            const ms = StatusStyles[member.status] || StatusStyles.offline;
+            const isUrgent = member.status === 'needshelp';
+            return (
+              <View
+                key={member.id}
+                style={[
+                  styles.teamCard,
+                  { borderColor: isUrgent ? ms.color + '60' : Colors.border },
+                  isUrgent && { backgroundColor: Colors.dangerFaint },
+                ]}
+              >
+                {/* Urgent top glow */}
+                {isUrgent && <View style={[styles.teamCardGlow, { backgroundColor: ms.color + '50' }]} />}
+                {/* Avatar */}
+                <View style={[styles.teamCardAvatar, { borderColor: ms.color + '50', backgroundColor: ms.bg }]}>
+                  <Text style={[styles.teamCardInitial, { color: ms.color }]}>
+                    {member.name.split(' ').pop()[0]}
+                  </Text>
+                  <View style={[styles.teamCardLevel, { borderColor: ms.color + '60' }]}>
+                    <Text style={[styles.teamCardLevelText, { color: ms.color }]}>{member.level}</Text>
+                  </View>
+                </View>
+                {/* Name */}
+                <Text style={styles.teamCardName} numberOfLines={1}>{member.name}</Text>
+                <Text style={styles.teamCardRole} numberOfLines={1}>{member.role}</Text>
+                {/* Status badge */}
+                <View style={[styles.teamCardBadge, { borderColor: ms.color + '40', backgroundColor: ms.bg }]}>
+                  <Text style={[styles.teamCardBadgeText, { color: ms.color }]}>{ms.label}</Text>
+                </View>
+                {/* Footer */}
+                <Text style={styles.teamCardMeta}>{member.lastUpdate}</Text>
+              </View>
+            );
+          })}
+        </ScrollView>
       </ScrollView>
 
       {/* Incident Detail Overlay */}
@@ -626,17 +660,123 @@ const styles = StyleSheet.create({
     letterSpacing: 2.5,
     color: Colors.danger,
   },
-  incidentScroll: {
-    marginHorizontal: -14,
-  },
-  incidentScrollContent: {
-    paddingHorizontal: 14,
+  incidentList: {
     gap: 10,
   },
-  panel: {
+  teamHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  teamHeaderIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  teamHeaderTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 2.5,
+    color: Colors.cyan,
+    flex: 1,
+  },
+  teamCount: {
+    fontSize: 11,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+  },
+  teamScroll: {
+    marginHorizontal: -14,
+  },
+  teamScrollContent: {
+    paddingHorizontal: 14,
+    gap: 10,
+    paddingVertical: 4,
+  },
+  teamCard: {
+    width: 150,
     backgroundColor: Colors.panel,
     borderRadius: 4,
     borderWidth: 1,
+    padding: 12,
+    alignItems: 'center',
+    gap: 6,
     overflow: 'hidden',
+  },
+  teamCardGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+  },
+  teamCardAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  teamCardInitial: {
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+  },
+  teamCardLevel: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderRadius: 2,
+    paddingHorizontal: 4,
+    minWidth: 18,
+    alignItems: 'center',
+  },
+  teamCardLevelText: {
+    fontSize: 8,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    lineHeight: 14,
+  },
+  teamCardName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.textBright,
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  teamCardRole: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+  },
+  teamCardBadge: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 2,
+    borderWidth: 1,
+    marginTop: 2,
+  },
+  teamCardBadgeText: {
+    fontSize: 8,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  teamCardMeta: {
+    fontSize: 8,
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 0.5,
   },
 });
