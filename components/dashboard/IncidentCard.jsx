@@ -8,23 +8,21 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function IncidentCard({ incident, width, onPress }) {
   const isHigh = incident.priority === 'high';
   const color = isHigh ? Colors.danger : Colors.warning;
   const bg = isHigh ? Colors.dangerFaint : Colors.warningFaint;
-  const cardWidth = width || SCREEN_WIDTH - 56;
+  const cardWidth = width || undefined;
 
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={() => onPress && onPress(incident)}
-      style={[styles.card, { width: cardWidth, borderColor: color + '35' }]}
+      style={[styles.card, { borderColor: color + '35' }, cardWidth ? { width: cardWidth } : null]}
     >
       {/* Top glow line */}
       <View style={[styles.glowLine, { backgroundColor: color + '50' }]} />

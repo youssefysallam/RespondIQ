@@ -5,14 +5,10 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Dimensions, Modal, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - 56;
 import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../../constants/colors';
 import { TEAM, INCIDENTS } from '../../constants/mockData';
-import TeamMemberRow from '../../components/dashboard/TeamMemberRow';
 import IncidentCard from '../../components/dashboard/IncidentCard';
 
 /**
@@ -198,6 +194,11 @@ function IncidentDetailOverlay({ incident, onClose }) {
               ))}
             </View>
           </ScrollView>
+
+          {/* Close hint */}
+          <View style={detailStyles.closeHint}>
+            <Text style={detailStyles.closeHintText}>TAP OUTSIDE TO CLOSE</Text>
+          </View>
         </Pressable>
       </Pressable>
     </Modal>
@@ -463,10 +464,20 @@ export default function DashboardScreen() {
     <View style={styles.screen}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>PSC COMPANION</Text>
-        <Text style={styles.subtitle}>
-          INC-4821 · STRUCTURE FIRE · 742 ELM ST
-        </Text>
+        <View style={styles.headerTop}>
+          <View style={styles.headerBrand}>
+            <View style={styles.brandIcon}>
+              <Ionicons name="shield-checkmark" size={16} color={Colors.cyan} />
+            </View>
+            <View>
+              <Text style={styles.title}>PSC COMPANION</Text>
+              <View style={styles.liveRow}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveText}>SYSTEM ONLINE</Text>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
 
       <ScrollView
@@ -474,61 +485,98 @@ export default function DashboardScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Status summary chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.chipsScroll}
-          contentContainerStyle={styles.chips}
-        >
-          {Object.entries(StatusStyles).map(([key, val]) => (
-            <View key={key} style={[styles.chip, { backgroundColor: val.bg, borderColor: val.color + '25' }]}>
-              <View style={[styles.chipDot, { backgroundColor: val.color }]} />
-              <Text style={[styles.chipText, { color: val.color }]}>
-                {statusCounts[key] || 0}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
-
-        {/* Active Incidents — horizontal swipe cards */}
+        {/* Active Incidents — vertical stack */}
         <View style={styles.incidentHeader}>
           <View style={[styles.incidentHeaderIcon, { borderColor: Colors.danger }]}>
             <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.danger }}>!</Text>
           </View>
           <Text style={styles.incidentHeaderTitle}>ACTIVE INCIDENTS</Text>
         </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled={false}
-          snapToAlignment="start"
-          decelerationRate="fast"
-          snapToInterval={CARD_WIDTH + 10}
-          style={styles.incidentScroll}
-          contentContainerStyle={styles.incidentScrollContent}
-        >
+        <View style={styles.incidentList}>
           {INCIDENTS.map((inc) => (
             <IncidentCard
               key={inc.id}
               incident={inc}
-              width={CARD_WIDTH}
               onPress={(incident) => setSelectedIncident(incident)}
             />
           ))}
-        </ScrollView>
-
-        {/* Team — system panel */}
-        <View style={[styles.panel, { borderColor: Colors.cyanBorder }]}>
-          <SystemPanelHeader title="Team Status" color={Colors.cyan} />
-          {sortedTeam.map((member, i) => (
-            <TeamMemberRow
-              key={member.id}
-              member={member}
-              isLast={i === sortedTeam.length - 1}
-            />
-          ))}
         </View>
+
+        {/* Team — horizontal scroll */}
+        <View style={styles.teamHeader}>
+          <View style={[styles.teamHeaderIcon, { borderColor: Colors.cyan }]}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: Colors.cyan }}>!</Text>
+          </View>
+          <Text style={styles.teamHeaderTitle}>TEAM STATUS</Text>
+          <Text style={styles.teamCount}>{TEAM.length}</Text>
+        </View>
+        {/* Crew readiness */}
+        <View style={styles.readinessPanel}>
+          <View style={styles.readinessHeader}>
+            <Ionicons name="people" size={14} color={Colors.cyan} />
+            <Text style={styles.readinessTitle}>LIVE STATUS</Text>
+            <Text style={styles.readinessCount}>{TEAM.length} MEMBERS</Text>
+          </View>
+          <View style={styles.readinessGrid}>
+            {Object.entries(StatusStyles).map(([key, val]) => {
+              const count = statusCounts[key] || 0;
+              return (
+                <View key={key} style={[styles.readinessItem, { borderColor: val.color + '20' }]}>
+                  <View style={styles.readinessItemTop}>
+                    <View style={[styles.readinessDot, { backgroundColor: val.color }]} />
+                    <Text style={[styles.readinessNum, { color: val.color }]}>{count}</Text>
+                  </View>
+                  <Text style={[styles.readinessLabel, { color: val.color + 'cc' }]}>{val.label}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          snapToInterval={160}
+          style={styles.teamScroll}
+          contentContainerStyle={styles.teamScrollContent}
+        >
+          {sortedTeam.map((member) => {
+            const ms = StatusStyles[member.status] || StatusStyles.offline;
+            const isUrgent = member.status === 'needshelp';
+            return (
+              <View
+                key={member.id}
+                style={[
+                  styles.teamCard,
+                  { borderColor: isUrgent ? ms.color + '60' : Colors.border },
+                  isUrgent && { backgroundColor: Colors.dangerFaint },
+                ]}
+              >
+                {/* Urgent top glow */}
+                {isUrgent && <View style={[styles.teamCardGlow, { backgroundColor: ms.color + '50' }]} />}
+                {/* Avatar */}
+                <View style={[styles.teamCardAvatar, { borderColor: ms.color + '50', backgroundColor: ms.bg }]}>
+                  <Text style={[styles.teamCardInitial, { color: ms.color }]}>
+                    {member.name.split(' ').pop()[0]}
+                  </Text>
+                  <View style={[styles.teamCardLevel, { borderColor: ms.color + '60' }]}>
+                    <Text style={[styles.teamCardLevelText, { color: ms.color }]}>{member.level}</Text>
+                  </View>
+                </View>
+                {/* Name */}
+                <Text style={styles.teamCardName} numberOfLines={1}>{member.name}</Text>
+                <Text style={styles.teamCardRole} numberOfLines={1}>{member.role}</Text>
+                {/* Status badge */}
+                <View style={[styles.teamCardBadge, { borderColor: ms.color + '40', backgroundColor: ms.bg }]}>
+                  <Text style={[styles.teamCardBadgeText, { color: ms.color }]}>{ms.label}</Text>
+                </View>
+                {/* Footer */}
+                <Text style={styles.teamCardMeta}>{member.lastUpdate}</Text>
+              </View>
+            );
+          })}
+        </ScrollView>
       </ScrollView>
 
       {/* Incident Detail Overlay */}
@@ -548,25 +596,57 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   header: {
-    paddingTop: 60,
-    paddingHorizontal: 18,
-    paddingBottom: 10,
+    paddingTop: 56,
     backgroundColor: Colors.bg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingBottom: 12,
+  },
+  headerBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  brandIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 4,
+    backgroundColor: Colors.cyanFaint,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '700',
     color: Colors.textBright,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
-  subtitle: {
-    fontSize: 10,
-    color: Colors.textTertiary,
+  liveRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 1,
+  },
+  liveDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: Colors.success,
+  },
+  liveText: {
+    fontSize: 8,
+    fontWeight: '700',
     fontFamily: 'monospace',
-    marginTop: 2,
-    letterSpacing: 0.8,
+    color: Colors.success,
+    letterSpacing: 1.5,
   },
   scroll: {
     flex: 1,
@@ -574,37 +654,74 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 14,
     paddingBottom: 20,
-    gap: 12,
+    gap: 14,
     paddingTop: 12,
   },
-  chipsScroll: {
-    marginHorizontal: -14,
+  readinessPanel: {
+    backgroundColor: Colors.panel,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    overflow: 'hidden',
   },
-  chips: {
+  readinessHeader: {
     flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 2,
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  chip: {
+  readinessTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.cyan,
+    letterSpacing: 2,
+    flex: 1,
+  },
+  readinessCount: {
+    fontSize: 9,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 1,
+  },
+  readinessGrid: {
+    flexDirection: 'row',
+    padding: 8,
+    gap: 6,
+  },
+  readinessItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderRadius: 3,
+    borderWidth: 1,
+    backgroundColor: Colors.bg,
+    gap: 4,
+  },
+  readinessItemTop: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 2,
-    borderWidth: 1,
   },
-  chipDot: {
+  readinessDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
   },
-  chipText: {
-    fontSize: 10,
+  readinessNum: {
+    fontSize: 16,
     fontWeight: '700',
     fontFamily: 'monospace',
-    letterSpacing: 0.5,
+  },
+  readinessLabel: {
+    fontSize: 7,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   incidentHeader: {
     flexDirection: 'row',
@@ -626,17 +743,123 @@ const styles = StyleSheet.create({
     letterSpacing: 2.5,
     color: Colors.danger,
   },
-  incidentScroll: {
-    marginHorizontal: -14,
-  },
-  incidentScrollContent: {
-    paddingHorizontal: 14,
+  incidentList: {
     gap: 10,
   },
-  panel: {
+  teamHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  teamHeaderIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  teamHeaderTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 2.5,
+    color: Colors.cyan,
+    flex: 1,
+  },
+  teamCount: {
+    fontSize: 11,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+  },
+  teamScroll: {
+    marginHorizontal: -14,
+  },
+  teamScrollContent: {
+    paddingHorizontal: 14,
+    gap: 10,
+    paddingVertical: 4,
+  },
+  teamCard: {
+    width: 150,
     backgroundColor: Colors.panel,
     borderRadius: 4,
     borderWidth: 1,
+    padding: 12,
+    alignItems: 'center',
+    gap: 6,
     overflow: 'hidden',
+  },
+  teamCardGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+  },
+  teamCardAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  teamCardInitial: {
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+  },
+  teamCardLevel: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderRadius: 2,
+    paddingHorizontal: 4,
+    minWidth: 18,
+    alignItems: 'center',
+  },
+  teamCardLevelText: {
+    fontSize: 8,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    lineHeight: 14,
+  },
+  teamCardName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.textBright,
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  teamCardRole: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+  },
+  teamCardBadge: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 2,
+    borderWidth: 1,
+    marginTop: 2,
+  },
+  teamCardBadgeText: {
+    fontSize: 8,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  teamCardMeta: {
+    fontSize: 8,
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 0.5,
   },
 });

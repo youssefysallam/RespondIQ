@@ -1,7 +1,22 @@
 /**
  * PSC Companion — Mock Data
- * Import: import { TEAM, INCIDENTS, ALERTS } from '../constants/mockData';
+ * Import: import { TEAM, INCIDENTS, ALERTS, HAZARD_ZONES, USER_PROFILE } from '../constants/mockData';
  */
+
+/**
+ * Current user profile — the person using the app.
+ */
+export const USER_PROFILE = {
+  id: '0',
+  name: 'You (FF Sallam)',
+  role: 'Engine 7',
+  status: 'onscene',
+  level: 25,
+  incidentId: 'INC-4821',
+  division: 'Division Alpha',
+  assignment: 'Search Team 1',
+  coords: { latitude: 40.7138, longitude: -74.0060 },
+};
 
 export const TEAM = [
   {
@@ -12,6 +27,10 @@ export const TEAM = [
     lastUpdate: '2m ago',
     signal: 3,
     level: 47,
+    incidentId: 'INC-4821',
+    division: 'Command',
+    assignment: 'Incident Command Post',
+    coords: { latitude: 40.7142, longitude: -74.0064 },
   },
   {
     id: '2',
@@ -21,6 +40,10 @@ export const TEAM = [
     lastUpdate: '5m ago',
     signal: 4,
     level: 38,
+    incidentId: 'INC-4819',
+    division: 'Medical Group',
+    assignment: 'Triage Lead',
+    coords: { latitude: 40.7180, longitude: -74.0010 },
   },
   {
     id: '3',
@@ -30,6 +53,10 @@ export const TEAM = [
     lastUpdate: '1m ago',
     signal: 2,
     level: 22,
+    incidentId: 'INC-4821',
+    division: 'Division Alpha',
+    assignment: 'Search Team 1',
+    coords: { latitude: 40.7125, longitude: -74.0045 },
   },
   {
     id: '4',
@@ -39,6 +66,10 @@ export const TEAM = [
     lastUpdate: '8m ago',
     signal: 4,
     level: 31,
+    incidentId: 'INC-4821',
+    division: 'Division Alpha',
+    assignment: 'Medical Standby',
+    coords: { latitude: 40.7135, longitude: -74.0058 },
   },
   {
     id: '5',
@@ -48,6 +79,10 @@ export const TEAM = [
     lastUpdate: '30s ago',
     signal: 1,
     level: 19,
+    incidentId: 'INC-4821',
+    division: 'Division Beta',
+    assignment: 'Ventilation',
+    coords: { latitude: 40.7145, longitude: -74.0068 },
   },
   {
     id: '6',
@@ -57,6 +92,40 @@ export const TEAM = [
     lastUpdate: '12m ago',
     signal: 0,
     level: 35,
+    incidentId: 'INC-4821',
+    division: 'Division Beta',
+    assignment: 'Perimeter Control',
+    coords: { latitude: 40.7150, longitude: -74.0072 },
+  },
+];
+
+/**
+ * Hazard zones — polygons/circles displayed as map overlays.
+ */
+export const HAZARD_ZONES = [
+  {
+    id: 'hz-1',
+    label: 'Collapse Zone',
+    type: 'danger',
+    center: { latitude: 40.7142, longitude: -74.0064 },
+    radius: 40, // meters
+    incidentId: 'INC-4821',
+  },
+  {
+    id: 'hz-2',
+    label: 'Gas Leak Perimeter',
+    type: 'warning',
+    center: { latitude: 40.7146, longitude: -74.0070 },
+    radius: 60,
+    incidentId: 'INC-4821',
+  },
+  {
+    id: 'hz-3',
+    label: 'Crowd Area',
+    type: 'caution',
+    center: { latitude: 40.7180, longitude: -74.0010 },
+    radius: 30,
+    incidentId: 'INC-4819',
   },
 ];
 
