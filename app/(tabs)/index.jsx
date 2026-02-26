@@ -9,7 +9,6 @@ import { View, Text, ScrollView, StyleSheet, Modal, Pressable } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../../constants/colors';
 import { TEAM, INCIDENTS } from '../../constants/mockData';
-import TeamMemberRow from '../../components/dashboard/TeamMemberRow';
 import IncidentCard from '../../components/dashboard/IncidentCard';
 
 /**
@@ -465,10 +464,20 @@ export default function DashboardScreen() {
     <View style={styles.screen}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>PSC COMPANION</Text>
-        <Text style={styles.subtitle}>
-          INC-4821 · STRUCTURE FIRE · 742 ELM ST
-        </Text>
+        <View style={styles.headerTop}>
+          <View style={styles.headerBrand}>
+            <View style={styles.brandIcon}>
+              <Ionicons name="shield-checkmark" size={16} color={Colors.cyan} />
+            </View>
+            <View>
+              <Text style={styles.title}>PSC COMPANION</Text>
+              <View style={styles.liveRow}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveText}>SYSTEM ONLINE</Text>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
 
       <ScrollView
@@ -476,23 +485,6 @@ export default function DashboardScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Status summary chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.chipsScroll}
-          contentContainerStyle={styles.chips}
-        >
-          {Object.entries(StatusStyles).map(([key, val]) => (
-            <View key={key} style={[styles.chip, { backgroundColor: val.bg, borderColor: val.color + '25' }]}>
-              <View style={[styles.chipDot, { backgroundColor: val.color }]} />
-              <Text style={[styles.chipText, { color: val.color }]}>
-                {statusCounts[key] || 0}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
-
         {/* Active Incidents — vertical stack */}
         <View style={styles.incidentHeader}>
           <View style={[styles.incidentHeaderIcon, { borderColor: Colors.danger }]}>
@@ -517,6 +509,28 @@ export default function DashboardScreen() {
           </View>
           <Text style={styles.teamHeaderTitle}>TEAM STATUS</Text>
           <Text style={styles.teamCount}>{TEAM.length}</Text>
+        </View>
+        {/* Crew readiness */}
+        <View style={styles.readinessPanel}>
+          <View style={styles.readinessHeader}>
+            <Ionicons name="people" size={14} color={Colors.cyan} />
+            <Text style={styles.readinessTitle}>LIVE STATUS</Text>
+            <Text style={styles.readinessCount}>{TEAM.length} MEMBERS</Text>
+          </View>
+          <View style={styles.readinessGrid}>
+            {Object.entries(StatusStyles).map(([key, val]) => {
+              const count = statusCounts[key] || 0;
+              return (
+                <View key={key} style={[styles.readinessItem, { borderColor: val.color + '20' }]}>
+                  <View style={styles.readinessItemTop}>
+                    <View style={[styles.readinessDot, { backgroundColor: val.color }]} />
+                    <Text style={[styles.readinessNum, { color: val.color }]}>{count}</Text>
+                  </View>
+                  <Text style={[styles.readinessLabel, { color: val.color + 'cc' }]}>{val.label}</Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
         <ScrollView
           horizontal
@@ -582,25 +596,57 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   header: {
-    paddingTop: 60,
-    paddingHorizontal: 18,
-    paddingBottom: 10,
+    paddingTop: 56,
     backgroundColor: Colors.bg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingBottom: 12,
+  },
+  headerBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  brandIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 4,
+    backgroundColor: Colors.cyanFaint,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '700',
     color: Colors.textBright,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
-  subtitle: {
-    fontSize: 10,
-    color: Colors.textTertiary,
+  liveRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 1,
+  },
+  liveDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: Colors.success,
+  },
+  liveText: {
+    fontSize: 8,
+    fontWeight: '700',
     fontFamily: 'monospace',
-    marginTop: 2,
-    letterSpacing: 0.8,
+    color: Colors.success,
+    letterSpacing: 1.5,
   },
   scroll: {
     flex: 1,
@@ -608,37 +654,74 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 14,
     paddingBottom: 20,
-    gap: 12,
+    gap: 14,
     paddingTop: 12,
   },
-  chipsScroll: {
-    marginHorizontal: -14,
+  readinessPanel: {
+    backgroundColor: Colors.panel,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    overflow: 'hidden',
   },
-  chips: {
+  readinessHeader: {
     flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 2,
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  chip: {
+  readinessTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.cyan,
+    letterSpacing: 2,
+    flex: 1,
+  },
+  readinessCount: {
+    fontSize: 9,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 1,
+  },
+  readinessGrid: {
+    flexDirection: 'row',
+    padding: 8,
+    gap: 6,
+  },
+  readinessItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderRadius: 3,
+    borderWidth: 1,
+    backgroundColor: Colors.bg,
+    gap: 4,
+  },
+  readinessItemTop: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 2,
-    borderWidth: 1,
   },
-  chipDot: {
+  readinessDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
   },
-  chipText: {
-    fontSize: 10,
+  readinessNum: {
+    fontSize: 16,
     fontWeight: '700',
     fontFamily: 'monospace',
-    letterSpacing: 0.5,
+  },
+  readinessLabel: {
+    fontSize: 7,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   incidentHeader: {
     flexDirection: 'row',
