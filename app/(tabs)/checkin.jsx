@@ -4,116 +4,302 @@
  * Solo Leveling system UI style.
  */
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors, StatusStyles } from '../../constants/colors';
-import CheckInPanel from '../../components/checkin/CheckInPanel';
+import React, { useMemo, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import * as Haptics from "expo-haptics";
+import { Colors, StatusStyles } from "../../constants/colors";
+import { GoCheckCircle } from "react-icons/go";
+
+const STATUS_KEYS = ["safe", "enroute", "onscene", "needshelp"];
 
 export default function CheckInScreen() {
-  const [currentStatus, setCurrentStatus] = useState('safe');
-  const [showPanel, setShowPanel] = useState(false);
-  const s = StatusStyles[currentStatus];
+  const [currentStatus, setCurrentStatus] = useState("safe");
+  const [pendingStatus, setPendingStatus] = useState(null);
+  const [info, setInfo] = useState(null);
+  const [infoType, setInfoType] = useState(null);
+
+  const current = StatusStyles[currentStatus];
+
+  const pending = useMemo(() => {
+    if (!pendingStatus) return null;
+    return StatusStyles[pendingStatus];
+  }, [pendingStatus]);
+
+  const onPickStatus = async (key) => {
+    if (key === currentStatus) {
+      await Haptics.selectionAsync();
+      setPendingStatus(null);
+      setInfo("ALREADY CURRENT STATUS");
+      setInfoType("warning");
+      return;
+    }
+    await Haptics.selectionAsync();
+    setInfo(null);
+    setPendingStatus(key);
+  };
+
+  const onCancel = async () => {
+    await Haptics.selectionAsync();
+    setPendingStatus(null);
+  };
+
+  const onConfirm = async () => {
+    if (!pendingStatus) return;
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Heavy);
+    setCurrentStatus(pendingStatus);
+    setPendingStatus(null);
+    setInfo("STATUS UPDATED • BROADCASTED");
+    setInfoType("success");
+  };
 
   return (
     <View style={styles.screen}>
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>CURRENT STATUS</Text>
 
-        {/* Status display — system panel style */}
-        <View style={[styles.statusPanel, { borderColor: s.color + '40' }]}>
-          <View style={[styles.statusDot, { backgroundColor: s.color }]} />
-          <Text style={[styles.statusLabel, { color: s.color }]}>
-            [{s.label}]
+        <View style={[styles.statusPanel, { borderColor: current.color + "40" }]}>
+          <View style={[styles.statusDot, { backgroundColor: current.color }]} />
+          <Text style={[styles.statusLabel, { color: current.color }]}>
+            [{current.label}]
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.updateButton}
-          onPress={() => setShowPanel(true)}
-          activeOpacity={0.8}
+        <View style={styles.grid}>
+          {STATUS_KEYS.map((key) => {
+            const s = StatusStyles[key];
+            const isCurrent = key === currentStatus;
+            const isPending = key === pendingStatus;
+
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[
+                  styles.statusButton,
+                  { borderColor: s.color + (isCurrent ? "70" : "35") },
+                  isCurrent && { backgroundColor: s.bg },
+                  isPending && { shadowColor: s.color, shadowOpacity: 0.35, elevation: 10 },
+                ]}
+                onPress={() => onPickStatus(key)}
+                activeOpacity={0.75}
+              >
+                <Text style={[styles.statusButtonText, { color: s.color }]}>
+                  {s.label}
+                </Text>
+                {isCurrent && (
+                  <Text style={[styles.currentTag, { color: s.color }]}>
+                    [CURRENT]
+                  </Text>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {pendingStatus && pending && (
+          <View style={[styles.confirmBox, { borderColor: pending.color + "50" }]}>
+            <Text style={styles.confirmText}>
+              Update status to{" "}
+              <Text style={{ color: pending.color, fontWeight: "700" }}>
+                [{pending.label}]
+              </Text>
+              ?
+            </Text>
+
+            <View style={styles.confirmRow}>
+              <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
+                <Text style={styles.cancelText}>CANCEL</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.confirmBtn,
+                  { backgroundColor: pending.bg, borderColor: pending.color + "60" },
+                ]}
+                onPress={onConfirm}
+              >
+                <Text style={[styles.confirmBtnText, { color: pending.color }]}>
+                  CONFIRM
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+      {!!info && (
+        <View
+          style={[
+            styles.alertBox,
+            infoType === "success" && { borderColor: Colors.green + "70" },
+            infoType === "warning" && { borderColor: Colors.orange + "70" },
+          ]}
         >
-          <Text style={styles.updateButtonText}>UPDATE STATUS</Text>
-        </TouchableOpacity>
+          <Text style={styles.alertIcon}>
+            {infoType === "success" ? <GoCheckCircle /> : <GoAlert />}
+          </Text>
 
-        <Text style={styles.hint}>
-          Your status is visible to all team members
-        </Text>
+          <Text style={styles.alertText}>
+            {info}
+          </Text>
+        </View>
+      )}
       </View>
-
-      <CheckInPanel
-        visible={showPanel}
-        onClose={() => setShowPanel(false)}
-        currentStatus={currentStatus}
-        onStatusChange={(newStatus) => setCurrentStatus(newStatus)}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-  },
+  screen: { flex: 1, backgroundColor: Colors.bg },
   content: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 22,
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '700',
-    fontFamily: 'monospace',
+    fontWeight: "700",
+    fontFamily: "monospace",
     color: Colors.cyan,
     letterSpacing: 2.5,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   statusPanel: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
     borderRadius: 4,
     backgroundColor: Colors.panel,
     borderWidth: 1,
-    marginBottom: 24,
+    marginBottom: 16,
   },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
+  statusDot: { width: 10, height: 10, borderRadius: 5 },
   statusLabel: {
     fontSize: 16,
-    fontWeight: '700',
-    fontFamily: 'monospace',
+    fontWeight: "700",
+    fontFamily: "monospace",
     letterSpacing: 1.5,
   },
-  updateButton: {
-    backgroundColor: Colors.cyanFaint,
-    borderWidth: 1,
-    borderColor: Colors.cyanBorder,
-    paddingVertical: 16,
-    paddingHorizontal: 40,
+
+  grid: {
+    width: "100%",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "space-between",
+    marginTop: 4,
+  },
+  statusButton: {
+    width: "48%",
+    minHeight: 58,
     borderRadius: 4,
-    shadowColor: Colors.cyan,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 6,
+    borderWidth: 1,
+    backgroundColor: Colors.surface,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 18,
   },
-  updateButtonText: {
-    color: Colors.cyan,
+  statusButtonText: {
     fontSize: 12,
-    fontWeight: '700',
-    fontFamily: 'monospace',
-    letterSpacing: 2,
+    fontWeight: "800",
+    fontFamily: "monospace",
+    letterSpacing: 1.6,
+    textAlign: "center",
   },
+  currentTag: {
+    marginTop: 4,
+    fontSize: 9,
+    fontFamily: "monospace",
+    letterSpacing: 1.4,
+    opacity: 0.9,
+  },
+
+  confirmBox: {
+    width: "100%",
+    marginTop: 14,
+    backgroundColor: Colors.panel,
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 12,
+  },
+  confirmText: {
+    color: Colors.textBright,
+    fontFamily: "monospace",
+    fontSize: 11,
+    letterSpacing: 0.6,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  confirmRow: {
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "space-between",
+  },
+  cancelBtn: {
+    flex: 1,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.borderStrong,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
+  cancelText: {
+    color: Colors.textSecondary,
+    fontSize: 11,
+    fontFamily: "monospace",
+    fontWeight: "800",
+    letterSpacing: 1.8,
+  },
+  confirmBtn: {
+    flex: 1,
+    borderRadius: 4,
+    borderWidth: 1,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  confirmBtnText: {
+    fontSize: 11,
+    fontFamily: "monospace",
+    fontWeight: "900",
+    letterSpacing: 1.8,
+  },
+
+  alertBox: {
+    width: "100%",
+    marginTop: 18,
+    borderRadius: 4,
+    borderWidth: 2,
+    backgroundColor: Colors.panel,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+
+  alertIcon: {
+    fontSize: 22,
+  },
+
+  alertText: {
+    fontSize: 13,
+    fontFamily: "monospace",
+    fontWeight: "900",
+    letterSpacing: 2,
+    textAlign: "center",
+    color: Colors.textBright,
+  },
+
   hint: {
     fontSize: 10,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     color: Colors.textTertiary,
     marginTop: 16,
     letterSpacing: 0.5,

@@ -195,10 +195,6 @@ function IncidentDetailOverlay({ incident, onClose }) {
             </View>
           </ScrollView>
 
-          {/* Close hint */}
-          <View style={detailStyles.closeHint}>
-            <Text style={detailStyles.closeHintText}>TAP OUTSIDE TO CLOSE</Text>
-          </View>
         </Pressable>
       </Pressable>
     </Modal>
