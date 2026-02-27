@@ -1,13 +1,7 @@
 /**
- * CheckInPanel — Solo Leveling system notification style bottom sheet.
- * Two-tap flow: select status → confirm.
- * Preserves gesture-based dismiss and haptic feedback.
- *
- * Props:
- *   visible        (bool)
- *   onClose        (func)
- *   currentStatus  (string)
- *   onStatusChange (func)
+ * Check-in Screen
+ * Owner: Azealia
+ * Solo Leveling system UI — dark panels with glowing headers.
  */
 
 import { Ionicons } from '@expo/vector-icons';
