@@ -6,9 +6,9 @@
 
 import React, { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Colors, StatusStyles } from "../../constants/colors";
-import { GoCheckCircle } from "react-icons/go";
 
 const STATUS_KEYS = ["safe", "enroute", "onscene", "needshelp"];
 
@@ -48,9 +48,18 @@ export default function CheckInScreen() {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Heavy);
     setCurrentStatus(pendingStatus);
     setPendingStatus(null);
-    setInfo("STATUS UPDATED • BROADCASTED");
+    setInfo("STATUS UPDATED · TEAM NOTIFIED");
     setInfoType("success");
   };
+
+  const alertColor =
+    infoType === "success" ? Colors.success : Colors.warning;
+  const alertGlow =
+    infoType === "success" ? Colors.successGlow : Colors.warningGlow;
+  const alertBg =
+    infoType === "success" ? Colors.successFaint : Colors.warningFaint;
+  const alertIcon =
+    infoType === "success" ? "checkmark-circle" : "alert-circle";
 
   return (
     <View style={styles.screen}>
@@ -77,7 +86,11 @@ export default function CheckInScreen() {
                   styles.statusButton,
                   { borderColor: s.color + (isCurrent ? "70" : "35") },
                   isCurrent && { backgroundColor: s.bg },
-                  isPending && { shadowColor: s.color, shadowOpacity: 0.35, elevation: 10 },
+                  isPending && {
+                    shadowColor: s.color,
+                    shadowOpacity: 0.35,
+                    elevation: 10,
+                  },
                 ]}
                 onPress={() => onPickStatus(key)}
                 activeOpacity={0.75}
@@ -113,7 +126,10 @@ export default function CheckInScreen() {
               <TouchableOpacity
                 style={[
                   styles.confirmBtn,
-                  { backgroundColor: pending.bg, borderColor: pending.color + "60" },
+                  {
+                    backgroundColor: pending.bg,
+                    borderColor: pending.color + "60",
+                  },
                 ]}
                 onPress={onConfirm}
               >
@@ -125,23 +141,29 @@ export default function CheckInScreen() {
           </View>
         )}
 
-      {!!info && (
-        <View
-          style={[
-            styles.alertBox,
-            infoType === "success" && { borderColor: Colors.green + "70" },
-            infoType === "warning" && { borderColor: Colors.orange + "70" },
-          ]}
-        >
-          <Text style={styles.alertIcon}>
-            {infoType === "success" ? <GoCheckCircle /> : <GoAlert />}
-          </Text>
+        {!!info && (
+          <View
+            style={[
+              styles.alertBox,
+              {
+                borderColor: alertColor + "40",
+                backgroundColor: alertBg,
+              },
+            ]}
+          >
+            {/* Glow line */}
+            <View style={[styles.alertGlow, { backgroundColor: alertColor + "50" }]} />
 
-          <Text style={styles.alertText}>
-            {info}
-          </Text>
-        </View>
-      )}
+            {/* Icon circle */}
+            <View style={[styles.alertIconBox, { borderColor: alertColor + "50" }]}>
+              <Ionicons name={alertIcon} size={22} color={alertColor} />
+            </View>
+
+            <Text style={[styles.alertText, { color: alertColor }]}>
+              {info}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -274,34 +296,33 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 18,
     borderRadius: 4,
-    borderWidth: 2,
-    backgroundColor: Colors.panel,
-    paddingVertical: 16,
+    borderWidth: 1,
+    paddingVertical: 14,
     paddingHorizontal: 14,
-    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    overflow: "hidden",
+  },
+  alertGlow: {
+    position: "absolute",
+    top: 0,
+    left: "15%",
+    right: "15%",
+    height: 1,
+  },
+  alertIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
-    gap: 12,
   },
-
-  alertIcon: {
-    fontSize: 22,
-  },
-
   alertText: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "monospace",
-    fontWeight: "900",
+    fontWeight: "800",
     letterSpacing: 2,
     textAlign: "center",
-    color: Colors.textBright,
-  },
-
-  hint: {
-    fontSize: 10,
-    fontFamily: "monospace",
-    color: Colors.textTertiary,
-    marginTop: 16,
-    letterSpacing: 0.5,
   },
 });
