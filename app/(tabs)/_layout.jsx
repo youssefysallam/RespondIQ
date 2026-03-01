@@ -28,6 +28,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="alerts"
+        options={{
+          title: 'ALERTS',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="flash" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="checkin"
         options={{
           title: 'CHECK IN',
@@ -40,15 +49,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="alerts"
+        name="profile"
         options={{
-          title: 'ALERTS',
+          title: 'PROFILE',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="flash" size={size} color={color} />
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
-            <Tabs.Screen
+      <Tabs.Screen
         name="map"
         options={{
           title: 'MAP',
