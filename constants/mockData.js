@@ -16,6 +16,22 @@ export const USER_PROFILE = {
   division: 'Division Alpha',
   assignment: 'Search Team 1',
   coords: { latitude: 40.7138, longitude: -74.0060 },
+  rank: 'Firefighter',
+  station: 'Station 14 — Downtown',
+  shift: 'Shift A · 0600–1800',
+  hoursOnDuty: 8.5,
+  certifications: [
+    { name: 'Hazmat Ops', expires: '2026-09-15', active: true },
+    { name: 'EMT-B', expires: '2026-03-01', active: true },
+    { name: 'Rope Rescue Tech', expires: '2025-12-10', active: false },
+    { name: 'Wildland FFT2', expires: '2027-01-20', active: true },
+  ],
+  gear: [
+    { item: 'SCBA', status: 'checked', psi: '4200 PSI' },
+    { item: 'Radio', status: 'active', channel: 'TAC-3' },
+    { item: 'TIC', status: 'checked', note: 'Battery 88%' },
+    { item: 'Irons', status: 'staged', note: 'On engine' },
+  ],
 };
 
 export const TEAM = [
