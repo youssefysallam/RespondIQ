@@ -20,9 +20,14 @@ export const Colors = {
   // Semantic
   danger: '#ff3b3b',
   dangerGlow: 'rgba(255, 59, 59, 0.3)',
+  dangerStrong: 'rgba(255, 59, 59, 0.16)',
   dangerFaint: 'rgba(255, 59, 59, 0.08)',
+  orange: '#FF5F15',
+  orangeStrong: 'gba(255, 149, 0, 0.16',
+  orangeFaint:'rgba(255, 140, 0, 0.08)',
   warning: '#ffb020',
   warningGlow: 'rgba(255, 176, 32, 0.3)',
+  warningStrong: 'rgba(255, 204, 0, 0.16)',
   warningFaint: 'rgba(255, 176, 32, 0.08)',
   success: '#00e676',
   successGlow: 'rgba(0, 230, 118, 0.3)',
@@ -33,6 +38,7 @@ export const Colors = {
   textBright: '#e8f0fe',
   textSecondary: '#7a8ba8',
   textTertiary: '#4a6080',
+  textQuaternary: '#7688a3',
 
   // Borders
   border: 'rgba(0, 212, 255, 0.12)',
