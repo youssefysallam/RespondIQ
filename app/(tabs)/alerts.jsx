@@ -100,11 +100,11 @@ function AlertRow({ alert, isLast, updateAlertStatus }) {
         style={[
           styles.alertRow,
           !isLast && styles.alertBorder,
-          isUrgent && styles.alertUrgent,
-            isNew && {backgroundColor: s.bgStrong},
-            isAcknowledged && styles.alertAcknowledged,
-            isResolved && styles.alertResolved,
-            !isAcknowledged && !isResolved && !isNew && { backgroundColor: Colors.panel },
+          isUrgent && !isAcknowledged && styles.alertUrgent && { backgroundColor: s.bgStrong },   
+          !isUrgent && isNew && { backgroundColor: s.bgStrong },      
+          !isUrgent && !isResolved && !isNew && { backgroundColor: Colors.panel },
+          isAcknowledged && styles.alertAcknowledged,
+          isResolved && styles.alertResolved,
         ]}
         
       >
