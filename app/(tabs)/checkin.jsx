@@ -4,10 +4,10 @@
  * Solo Leveling system UI style.
  */
 
-import React, { useMemo, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import React, { useMemo, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors, StatusStyles } from "../../constants/colors";
 
 const STATUS_KEYS = ["safe", "enroute", "onscene", "needshelp"];
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
 
   confirmBox: {
     width: "100%",
-    marginTop: 14,
+    marginTop: 60,
     backgroundColor: Colors.panel,
     borderWidth: 1,
     borderRadius: 4,
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
 
   alertBox: {
     width: "100%",
-    marginTop: 18,
+    marginTop: 60,
     borderRadius: 4,
     borderWidth: 1,
     paddingVertical: 14,
