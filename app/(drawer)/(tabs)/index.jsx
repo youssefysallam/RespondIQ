@@ -4,13 +4,13 @@
  * Solo Leveling system UI — dark panels with glowing headers.
  */
 
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../../constants/colors';
-import { TEAM, INCIDENTS } from '../../constants/mockData';
-import IncidentCard from '../../components/dashboard/IncidentCard';
-
+import React, { useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import IncidentCard from '../../../components/dashboard/IncidentCard';
+import HamburgerButton from '../../../components/header/HamburgerButton';
+import { Colors, STATUS_SORT_ORDER, StatusStyles } from '../../../constants/colors';
+import { INCIDENTS, TEAM } from '../../../constants/mockData';
 /**
  * SystemPanelHeader — the ⓘ NOTIFICATION-style header
  * used on Solo Leveling quest/status panels.
@@ -460,6 +460,9 @@ export default function DashboardScreen() {
     <View style={styles.screen}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.hamburgerRow}>
+          <HamburgerButton />
+        </View>
         <View style={styles.headerTop}>
           <View style={styles.headerBrand}>
             <View style={styles.brandIcon}>
@@ -592,10 +595,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   header: {
-    paddingTop: 56,
     backgroundColor: Colors.bg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+  },
+  hamburgerRow: {
+    paddingTop: 55,
+    paddingHorizontal: 18,
+    paddingBottom: 26,
   },
   headerTop: {
     flexDirection: 'row',

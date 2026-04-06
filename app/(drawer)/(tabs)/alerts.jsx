@@ -21,8 +21,9 @@ import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { Colors } from '../../constants/colors';
-import { ALERTS } from '../../constants/mockData';
+import HamburgerButton from '../../../components/header/HamburgerButton';
+import { Colors } from '../../../constants/colors';
+import { ALERTS } from '../../../constants/mockData';
 
 const TYPE_STYLES = {
   urgent: { color: Colors.danger, bg: Colors.dangerFaint, bgStrong: Colors.dangerStrong, icon: 'warning' },
@@ -178,6 +179,9 @@ export default function AlertsScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
+         <View style={styles.hamburgerRow}>
+            <HamburgerButton />
+          </View>
         <Text style={styles.title}>SYSTEM ALERTS</Text>
         <Text style={styles.subtitle}>Recent team activity</Text>
       </View>
@@ -230,6 +234,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+  },
+  hamburgerRow: {
+    paddingHorizontal: 1,
+    paddingBottom: 26,
   },
   title: {
     fontSize: 22,

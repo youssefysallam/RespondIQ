@@ -7,22 +7,23 @@
  * SETUP: Run `npx expo install react-native-maps` before using.
  */
 
-import React, { useState, useRef, useMemo } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useMemo, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
+  Alert,
+  Dimensions,
   Modal,
   Pressable,
   ScrollView,
-  Dimensions,
-  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import MapView, { Marker, Circle } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, StatusStyles } from '../../constants/colors';
-import { TEAM, INCIDENTS, HAZARD_ZONES, USER_PROFILE } from '../../constants/mockData';
+import MapView, { Circle, Marker } from 'react-native-maps';
+import HamburgerButton from '../../../components/header/HamburgerButton';
+import { Colors, StatusStyles } from '../../../constants/colors';
+import { HAZARD_ZONES, INCIDENTS, TEAM, USER_PROFILE } from '../../../constants/mockData';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -759,7 +760,9 @@ export default function MapScreen() {
           </Marker>
         ))}
       </MapView>
-
+      <View style={styles.hamburger}>
+          <HamburgerButton />
+      </View>   
       {/* ICS assignment banner */}
       <ICSBanner profile={USER_PROFILE} />
 
@@ -959,5 +962,16 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     color: Colors.cyan,
     letterSpacing: 1,
+  },
+  hamburger: {
+    position: 'absolute',
+    top: 110,
+    left: 12,
+    zIndex: 10,
+    backgroundColor: Colors.surface,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    padding: 10,
   },
 });

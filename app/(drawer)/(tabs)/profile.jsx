@@ -4,11 +4,12 @@
  * gear readiness, certifications, and shift info.
  */
 
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, StatusStyles } from '../../constants/colors';
-import { USER_PROFILE, INCIDENTS } from '../../constants/mockData';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import HamburgerButton from '../../../components/header/HamburgerButton';
+import { Colors, StatusStyles } from '../../../constants/colors';
+import { INCIDENTS, USER_PROFILE } from '../../../constants/mockData';
 
 /* ─── Section header (reusable) ─── */
 function SectionHeader({ icon, title, color = Colors.cyan }) {
@@ -57,6 +58,9 @@ export default function ProfileScreen() {
     <View style={styles.screen}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.hamburgerRow}>
+          <HamburgerButton />
+        </View>
         <View style={styles.headerTop}>
           <View style={styles.headerBrand}>
             <View style={styles.brandIcon}>
@@ -229,10 +233,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   header: {
-    paddingTop: 56,
     backgroundColor: Colors.bg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    marginTop: 55,
+  },
+  hamburgerRow: {
+    paddingHorizontal: 18,
+    paddingBottom: 26,
   },
   headerTop: {
     paddingHorizontal: 18,
@@ -242,6 +250,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    paddingBottom: 12,
   },
   brandIcon: {
     width: 34,

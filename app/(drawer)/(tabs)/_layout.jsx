@@ -2,10 +2,10 @@
  * Tab Layout — Solo Leveling system UI tab bar.
  */
 
-import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Tabs } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+import { Colors } from '../../../constants/colors';
 
 export default function TabLayout() {
   return (
@@ -20,12 +20,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'TEAM',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
-          ),
-        }}
+        options={{ href: null}}
       />
       <Tabs.Screen
         name="alerts"
@@ -50,12 +45,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="profile"
-        options={{
-          title: 'PROFILE',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-        }}
+        options={{href: null}}
       />
       <Tabs.Screen
         name="map"

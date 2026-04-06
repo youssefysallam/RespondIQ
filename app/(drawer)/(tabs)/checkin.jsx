@@ -8,7 +8,8 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React, { useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Colors, StatusStyles } from "../../constants/colors";
+import HamburgerButton from '../../../components/header/HamburgerButton';
+import { Colors, StatusStyles } from "../../../constants/colors";
 
 const STATUS_KEYS = ["safe", "enroute", "onscene", "needshelp"];
 
@@ -63,6 +64,9 @@ export default function CheckInScreen() {
 
   return (
     <View style={styles.screen}>
+      <View style={styles.hamburger}>
+        <HamburgerButton />
+      </View> 
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>CURRENT STATUS</Text>
 
@@ -324,5 +328,15 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 2,
     textAlign: "center",
+  },
+  hamburger: {
+    position: 'absolute',
+    top: 54,
+    left: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.cyanBorder,
+    padding: 8,
   },
 });
