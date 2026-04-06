@@ -8,7 +8,8 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
+        {/* <Stack.Screen name="(tabs)" /> */}
+        <Stack.Screen name="(drawer)" />
       </Stack>
     </GestureHandlerRootView>
   );
