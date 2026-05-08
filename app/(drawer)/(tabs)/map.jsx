@@ -23,6 +23,7 @@ import {
 import MapView, { Circle, Marker } from 'react-native-maps';
 import HamburgerButton from '../../../components/header/HamburgerButton';
 import { Colors, StatusStyles } from '../../../constants/colors';
+import { MAN_DOWN, RESPONDER_STATUS } from '../../../constants/Config';
 import { HAZARD_ZONES, INCIDENTS, TEAM, USER_PROFILE } from '../../../constants/mockData';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -694,8 +695,18 @@ export default function MapScreen() {
     caution: { fill: 'rgba(0,212,255,0.08)', stroke: 'rgba(0,212,255,0.3)' },
   };
 
+  // Qualified responders (not offline or needing help themselves)
+  const qualifiedResponders = useMemo(
+    () => TEAM.filter(
+      (m) => m.status !== RESPONDER_STATUS.OFFLINE && m.status !== RESPONDER_STATUS.NEEDSHELP
+    ),
+    []
+  );
+  const manDownEnabled = qualifiedResponders.length >= MAN_DOWN.MIN_RESPONDERS;
+
   // Man-down trigger
   const handleManDown = () => {
+    if (!manDownEnabled) return;
     Alert.alert(
       'MAN-DOWN EMERGENCY',
       'This will broadcast an emergency alert to your team and command. Continue?',
@@ -784,12 +795,24 @@ export default function MapScreen() {
 
         {/* Man-down button */}
         <TouchableOpacity
-          style={styles.manDownButton}
+          style={[styles.manDownButton, !manDownEnabled && styles.manDownButtonDisabled]}
           onPress={handleManDown}
-          activeOpacity={0.7}
+          activeOpacity={manDownEnabled ? 0.7 : 1}
+          disabled={!manDownEnabled}
         >
-          <Ionicons name="alert-circle" size={28} color={Colors.danger} />
-          <Text style={styles.manDownLabel}>MAN{'\n'}DOWN</Text>
+          <Ionicons
+            name="alert-circle"
+            size={28}
+            color={manDownEnabled ? Colors.danger : Colors.textTertiary}
+          />
+          <Text style={[styles.manDownLabel, !manDownEnabled && styles.manDownLabelDisabled]}>
+            MAN{'\n'}DOWN
+          </Text>
+          {!manDownEnabled && (
+            <Text style={styles.manDownUnavailable}>
+              {qualifiedResponders.length}/{MAN_DOWN.MIN_RESPONDERS}
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* Recenter button */}
@@ -914,6 +937,21 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     textAlign: 'center',
     lineHeight: 10,
+  },
+  manDownButtonDisabled: {
+    borderColor: Colors.border,
+    shadowOpacity: 0,
+    opacity: 0.5,
+  },
+  manDownLabelDisabled: {
+    color: Colors.textTertiary,
+  },
+  manDownUnavailable: {
+    fontSize: 7,
+    fontFamily: 'monospace',
+    color: Colors.textTertiary,
+    letterSpacing: 1,
+    textAlign: 'center',
   },
   legend: {
     position: 'absolute',
