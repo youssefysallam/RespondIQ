@@ -469,7 +469,7 @@ export default function DashboardScreen() {
               <Ionicons name="shield-checkmark" size={16} color={Colors.cyan} />
             </View>
             <View>
-              <Text style={styles.title}>PSC COMPANION</Text>
+              <Text style={styles.title}>RESPONDIQ</Text>
               <View style={styles.liveRow}>
                 <View style={styles.liveDot} />
                 <Text style={styles.liveText}>SYSTEM ONLINE</Text>
