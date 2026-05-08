@@ -1,5 +1,5 @@
 /**
- * PSC Companion — Solo Leveling System UI Design Tokens
+ * RespondIQ — Solo Leveling System UI Design Tokens
  * Dark theme with cyan glow, system-panel aesthetic.
  * Import: import { Colors, StatusStyles, STATUS_SORT_ORDER } from '../constants/colors';
  */

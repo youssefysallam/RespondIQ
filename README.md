@@ -1,4 +1,4 @@
-# PSC Companion
+# RespondIQ
 
 A mobile first interface for first responders to stay connected, coordinate quickly, and maintain situational awareness during critical deployments.
 
@@ -14,8 +14,8 @@ You will need [Node.js](https://nodejs.org/) v18 or newer installed, and the [Ex
 ### Setup
 
 ```bash
-git clone https://github.com/youssefysallam/PSCCompanion.git
-cd PSCCompanion
+git clone https://github.com/youssefysallam/RespondIQ.git
+cd RespondIQ
 npm install
 npx expo start
 ```
@@ -33,7 +33,7 @@ The app currently ships five tabs, such as TEAM, ALERTS, CHECK IN, PROFILE, and 
 ## Project Structure
 
 ```
-PSCCompanion/
+RespondIQ/
 ├── app/                            Screens (Expo Router, file based routing)
 │   ├── _layout.jsx                 Root layout
 │   ├── index.jsx                   Entry redirect

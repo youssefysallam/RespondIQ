@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "PSCCompanion",
-    "slug": "PSCCompanion",
+    "name": "RespondIQ",
+    "slug": "respondiq",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "psccompanion",
+    "scheme": "respondiq",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

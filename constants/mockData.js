@@ -1,5 +1,5 @@
 /**
- * PSC Companion — Mock Data
+ * RespondIQ — Mock Data
  * Import: import { TEAM, INCIDENTS, ALERTS, HAZARD_ZONES, USER_PROFILE } from '../constants/mockData';
  */
 
